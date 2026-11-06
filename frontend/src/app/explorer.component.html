@@ -1,0 +1,85 @@
+<div class="ex" [class.ex--split]="split()">
+  <app-list-detail [detailOpen]="selectedId() !== null" (back)="closeDetail()">
+    <section list class="ld-pane ex__pane" aria-labelledby="ex-title">
+      <app-page-header [pane]="true" titleId="ex-title" [title]="t('specs')" />
+
+      <app-sticky-bar class="ld-pane__filters">
+        <div class="ex__chips" role="group" [attr.aria-label]="t('source')">
+          <app-source page="specs" />
+        </div>
+        <app-search-pill
+          [placeholder]="t('searchSpecs')"
+          [label]="t('searchSpecsLabel')"
+          [value]="q()"
+          [clearable]="true"
+          (valueChange)="q.set($event)"
+        />
+        <div class="ex__chips" role="group" [attr.aria-label]="t('filter')">
+          <app-filter-select
+            class="ex__chip"
+            [label]="t('status')"
+            [options]="statusOptions()"
+            [value]="status()"
+            [text]="statusText()"
+            (valueChange)="status.set($event)"
+            filled
+          />
+          <app-filter-select
+            class="ex__chip"
+            [label]="t('kind')"
+            [options]="kindOptions()"
+            [value]="kind()"
+            [text]="kindText()"
+            (valueChange)="kind.set($event)"
+            filled
+          />
+          @if (filtered()) {
+            <app-button variant="text" size="sm" (click)="reset()">{{ t('reset') }}</app-button>
+          }
+        </div>
+      </app-sticky-bar>
+
+      <div class="ex__scroll" appScrollFade="y">
+        @if (data.error(); as status) {
+          <app-empty-state icon="alert" [heading]="errorText(status)">
+            <app-button variant="text" size="sm" (click)="data.reload()">{{ t('retry') }}</app-button>
+          </app-empty-state>
+        } @else if (data.index() && !groups().length) {
+          @if (filtered()) {
+            <app-empty-state [heading]="t('noSpecMatch')">
+              <app-button variant="text" size="sm" (click)="reset()">{{ t('reset') }}</app-button>
+            </app-empty-state>
+          } @else {
+            <app-empty-state icon="document" [heading]="t('noSpecs')" />
+          }
+        }
+        @for (g of groups(); track g.key) {
+          <app-list-group [label]="t('kind.' + g.kind) + ' · ' + g.topic">
+            <div class="ex__rows" [class.rowgroup]="!split()" role="list">
+              @for (s of g.specs; track s.id) {
+                <app-list-item
+                  role="listitem"
+                  class="ex__row"
+                  [title]="s.title"
+                  [link]="data.specLink(s.id)"
+                  [selected]="s.id === selectedId()"
+                >
+                  <span sub class="mono">{{ s.num }} · {{ s.id.split('/').slice(0, -1).join('/') }}</span>
+                  @if (data.status(s) !== 'approved') {
+                    <span trail>
+                      <app-status-text [kind]="statusKind(s)">{{ t('status.' + data.status(s)) }}</app-status-text>
+                    </span>
+                  }
+                </app-list-item>
+              }
+            </div>
+          </app-list-group>
+        }
+      </div>
+    </section>
+
+    <div detail class="ex__detail">
+      <router-outlet />
+    </div>
+  </app-list-detail>
+</div>

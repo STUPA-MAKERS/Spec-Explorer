@@ -1,0 +1,138 @@
+@if (spec(); as s) {
+  <article class="sd" [class.sd--split]="split()" aria-labelledby="sd-title">
+    <header class="sheet-head sd__head">
+      <app-sheet-bar [bleed]="split()">
+        <h2 appSheetBarTitle id="sd-title" class="sheet-title">{{ s.title }}</h2>
+        <app-button variant="text" [iconOnly]="true" [ariaLabel]="t('openFile')" (click)="open(s.file)">
+          <app-icon name="ext" />
+        </app-button>
+      </app-sheet-bar>
+      <p class="sheet-line sd__line">
+        <app-status-text [kind]="statusKind()">{{ t('status.' + status()) }}</app-status-text>
+        <span class="sd__dot" aria-hidden="true">·</span><span class="mono">{{ s.id }}</span>
+        <span class="sd__dot" aria-hidden="true">·</span><span>{{ t('kind.' + s.kind) }}</span>
+        <span class="sd__dot" aria-hidden="true">·</span><span>{{ s.owner }}</span>
+        <span class="sd__dot" aria-hidden="true">·</span><span>{{ updated() }}</span>
+      </p>
+      @if (s.errors.length) {
+        <app-note class="sd__note" kind="error" icon="alert">
+          @for (e of s.errors; track $index) {
+            <span class="mono sd__err">{{ e }}</span>
+          }
+        </app-note>
+      }
+      @if (s.replacedBy; as r) {
+        <app-note class="sd__note" icon="swap">
+          {{ t('replacedBy') }}
+          <a class="sd__link mono" [routerLink]="data.specLink(r)">{{ r }}</a>
+        </app-note>
+      }
+    </header>
+
+    <div class="sd__cols">
+      <div class="sd__col">
+        <app-section class="sd__sec" [heading]="t('rule')" [hideHeading]="true">
+          <app-markdown-view
+            class="sd__body"
+            [src]="s.body"
+            [headingOffset]="2"
+            [imageSrc]="null"
+            [mailto]="false"
+          />
+        </app-section>
+      </div>
+
+      <div class="sd__col">
+        @if (s.status === 'draft' || s.status === 'approved') {
+          <app-section class="sd__sec" [heading]="t('implementation')">
+            @if (s.implementation === null) {
+              <app-empty-state rows="2" [heading]="t('notImplemented')" />
+            } @else if (s.implementation.length) {
+              <div class="rowgroup">
+                @for (p of s.implementation; track p.path) {
+                  <app-list-item class="sd__row sd__path" [title]="p.path" (activate)="open(p.path)">
+                    @if (p.exists) {
+                      <app-icon trail name="ext" [size]="16" />
+                    } @else {
+                      <app-status-text trail kind="error">{{ t('missing') }}</app-status-text>
+                    }
+                  </app-list-item>
+                }
+              </div>
+            } @else {
+              <app-empty-state rows="2" [heading]="t('noPaths')" />
+            }
+          </app-section>
+        }
+
+        <app-section class="sd__sec" [heading]="t('tests')">
+          @if (s.tests.length) {
+            <div class="rowgroup">
+              @for (x of s.tests; track x.entry) {
+                <app-list-item class="sd__row sd__path" [title]="x.fn" [sub]="x.path" (activate)="open(x.path, x.line)">
+                  @if (x.exists) {
+                    <app-icon trail name="ext" [size]="16" />
+                  } @else {
+                    <app-status-text trail kind="error">{{ t('missing') }}</app-status-text>
+                  }
+                </app-list-item>
+              }
+            </div>
+          } @else {
+            <app-empty-state rows="2" [heading]="t('noTests')" />
+          }
+        </app-section>
+
+        <app-section class="sd__sec" [heading]="t('codeRefs')">
+          @if (s.codeRefs.length) {
+            <div class="rowgroup">
+              @for (r of s.codeRefs; track $index) {
+                <app-list-item
+                  class="sd__row sd__path"
+                  [title]="base(r.path) + ':' + r.line"
+                  [sub]="dir(r.path)"
+                  (activate)="open(r.path, r.line)"
+                >
+                  <app-icon trail name="ext" [size]="16" />
+                </app-list-item>
+              }
+            </div>
+          } @else {
+            <app-empty-state rows="2" [heading]="t('noCodeRefs')" />
+          }
+        </app-section>
+
+        <app-section class="sd__sec" [heading]="t('scope')">
+          <div class="rowgroup">
+            @for (p of s.scope; track p.path) {
+              <app-list-item class="sd__row sd__path" [title]="p.path" (activate)="open(p.path)">
+                @if (p.exists) {
+                  <app-icon trail name="ext" [size]="16" />
+                } @else {
+                  <app-status-text trail kind="error">{{ t('missing') }}</app-status-text>
+                }
+              </app-list-item>
+            }
+          </div>
+        </app-section>
+
+        @if (linked().length) {
+          <app-section class="sd__sec" [heading]="t('otherSpecs')">
+            <div class="rowgroup">
+              @for (x of linked(); track x.how + x.spec.id) {
+                <app-list-item
+                  class="sd__row"
+                  [title]="x.spec.title"
+                  [sub]="t(x.how) + ' · ' + x.spec.id"
+                  [link]="data.specLink(x.spec.id)"
+                />
+              }
+            </div>
+          </app-section>
+        }
+      </div>
+    </div>
+  </article>
+} @else if (data.index()) {
+  <app-empty-state plain icon="file" fill [heading]="t('specMissing')" />
+}

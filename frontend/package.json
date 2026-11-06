@@ -1,0 +1,43 @@
+{
+  "name": "spec-explorer-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "overrides": [{ "files": "*.html", "options": { "parser": "angular" } }]
+  },
+  "dependencies": {
+    "@angular/animations": "^20.3.34",
+    "@angular/common": "^20.3.34",
+    "@angular/compiler": "^20.3.34",
+    "@angular/core": "^20.3.34",
+    "@angular/forms": "^20.3.34",
+    "@angular/platform-browser": "^20.3.34",
+    "@angular/router": "^20.3.34",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.3.40",
+    "@angular/cli": "^20.3.40",
+    "@angular/compiler-cli": "^20.3.34",
+    "@angular/platform-browser-dynamic": "^20.3.34",
+    "@testing-library/angular": "^17.3.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
+    "jest-preset-angular": "^16.2.0",
+    "typescript": "~5.9.2"
+  }
+}

@@ -1,0 +1,23 @@
+@use 'breakpoints' as bp;
+@use 'scroll-fade' as fade;
+@use 'list-pane' as lp;
+
+:host { @include lp.stack; }
+:host(:not(.pane-page)) { flex: 1 0 auto; }
+.ex { min-width: 0; }
+.ex:not(.ex--split) { @include lp.single-column; }
+.ex:not(.ex--split) > app-list-detail { flex: 1 0 auto; }
+.ex--split { @include lp.split-column; }
+.ex:not(.ex--split) .ex__pane { flex: 1 0 auto; }
+.ex__chips { @include lp.chips; }
+.ex__chip { max-width: 100%; }
+.ex__scroll { @include lp.scroll(--ex-fade); }
+.ex:not(.ex--split) .ex__scroll { flex: 1 0 auto; }
+.ex--split .ex__scroll { @include lp.split-scroll(--ex-fade); }
+.ex--split .ex__scroll > * { flex: none; }
+.ex__scroll { @include fade.fade-y(var(--ex-fade)); }
+.ex__rows { @include lp.stack; }
+.ex__detail { @include lp.detail; }
+.ex--split .ex__detail { min-height: 0; }
+@include bp.phone { .ex__chips { @include lp.phone-chips; } }
+.ex__row { --li-gap: var(--space-3); }

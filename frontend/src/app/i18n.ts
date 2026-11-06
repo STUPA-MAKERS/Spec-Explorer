@@ -1,0 +1,183 @@
+import { Injectable, computed, signal } from '@angular/core';
+
+/** The UI languages. §NF/accessibility/language/000039 */
+export type Lang = 'de' | 'en';
+
+const DE = {
+  specs: 'Specs',
+  refs: 'Verweise',
+  repo: 'Repo',
+  ref: 'Stand',
+  source: 'Quelle',
+  filter: 'Filter',
+  otherRef: 'Anderer Stand …',
+  searchSpecs: 'Nummer, ID oder Titel',
+  searchSpecsLabel: 'Specs durchsuchen',
+  status: 'Status',
+  kind: 'Art',
+  all: 'Alle',
+  reset: 'Zurücksetzen',
+  noSpecMatch: 'Keine Spec passt zu den Filtern',
+  noSpecs: 'Keine Specs an diesem Stand',
+  'status.draft': 'Entwurf',
+  'status.approved': 'Freigegeben',
+  'status.replaced': 'Ersetzt',
+  'status.removed': 'Entfernt',
+  'status.error': 'Fehler',
+  'kind.functional': 'Funktional',
+  'kind.non-functional': 'Nicht-funktional',
+  'kind.style': 'Stil',
+  openFile: 'Datei auf GitHub öffnen',
+  replacedBy: 'Ersetzt durch',
+  rule: 'Regel',
+  implementation: 'Umsetzung',
+  notImplemented: 'Nicht umgesetzt',
+  noPaths: 'Keine Pfade',
+  missing: 'fehlt',
+  tests: 'Tests',
+  noTests: 'Keine Tests',
+  codeRefs: 'Verweise im Code',
+  noCodeRefs: 'Kein Verweis im Code',
+  scope: 'Geltungsbereich',
+  otherSpecs: 'Andere Specs',
+  replaces: 'Ersetzt',
+  mentions: 'Nennt',
+  mentionedBy: 'Genannt von',
+  specMissing: 'Diese Spec gibt es an diesem Stand nicht',
+  pickSpec: 'Spec auswählen',
+  searchRefs: 'ID oder Datei',
+  searchRefsLabel: 'Verweise durchsuchen',
+  spec: 'Spec',
+  withSpec: 'Mit Spec',
+  withoutSpec: 'Ohne Spec',
+  noRefMatch: 'Kein Verweis passt zu den Filtern',
+  noRefs: 'Kein Verweis mit §',
+  pickRef: 'Verweis auswählen',
+  refMissing: 'Diesen Verweis gibt es an diesem Stand nicht',
+  openLine: 'Zeile auf GitHub öffnen',
+  line: 'Zeile {n}',
+  codePlace: 'Stelle im Code',
+  file: 'Datei',
+  chooseRef: 'Stand wählen',
+  refKind: 'Art des Stands',
+  branch: 'Branch',
+  tag: 'Tag',
+  commit: 'Commit',
+  searchBranch: 'Branch suchen',
+  searchTag: 'Tag suchen',
+  commitSha: 'Commit-SHA',
+  shaInvalid: 'Kein gültiger Commit-SHA',
+  open: 'Öffnen',
+  cancel: 'Abbrechen',
+  current: 'aktuell',
+  notFound: 'Diesen Stand gibt es nicht',
+  tooLarge: 'Das Repository ist zu groß',
+  loadFailed: 'Laden fehlgeschlagen',
+  retry: 'Erneut versuchen',
+};
+
+type Key = keyof typeof DE;
+
+const EN: Record<Key, string> = {
+  specs: 'Specs',
+  refs: 'References',
+  repo: 'Repository',
+  ref: 'Version',
+  source: 'Source',
+  filter: 'Filter',
+  otherRef: 'Other version …',
+  searchSpecs: 'Number, ID or title',
+  searchSpecsLabel: 'Search specs',
+  status: 'Status',
+  kind: 'Kind',
+  all: 'All',
+  reset: 'Reset',
+  noSpecMatch: 'No spec matches the filters',
+  noSpecs: 'No specs at this version',
+  'status.draft': 'Draft',
+  'status.approved': 'Approved',
+  'status.replaced': 'Replaced',
+  'status.removed': 'Removed',
+  'status.error': 'Error',
+  'kind.functional': 'Functional',
+  'kind.non-functional': 'Non-functional',
+  'kind.style': 'Style',
+  openFile: 'Open the file on GitHub',
+  replacedBy: 'Replaced by',
+  rule: 'Rule',
+  implementation: 'Implementation',
+  notImplemented: 'Not implemented',
+  noPaths: 'No paths',
+  missing: 'missing',
+  tests: 'Tests',
+  noTests: 'No tests',
+  codeRefs: 'References in the code',
+  noCodeRefs: 'No reference in the code',
+  scope: 'Scope',
+  otherSpecs: 'Other specs',
+  replaces: 'Replaces',
+  mentions: 'Names',
+  mentionedBy: 'Named by',
+  specMissing: 'This spec does not exist at this version',
+  pickSpec: 'Select a spec',
+  searchRefs: 'ID or file',
+  searchRefsLabel: 'Search references',
+  spec: 'Spec',
+  withSpec: 'With spec',
+  withoutSpec: 'Without spec',
+  noRefMatch: 'No reference matches the filters',
+  noRefs: 'No reference with §',
+  pickRef: 'Select a reference',
+  refMissing: 'This reference does not exist at this version',
+  openLine: 'Open the line on GitHub',
+  line: 'Line {n}',
+  codePlace: 'Place in the code',
+  file: 'File',
+  chooseRef: 'Choose a version',
+  refKind: 'Kind of version',
+  branch: 'Branch',
+  tag: 'Tag',
+  commit: 'Commit',
+  searchBranch: 'Search branches',
+  searchTag: 'Search tags',
+  commitSha: 'Commit SHA',
+  shaInvalid: 'Not a valid commit SHA',
+  open: 'Open',
+  cancel: 'Cancel',
+  current: 'current',
+  notFound: 'This version does not exist',
+  tooLarge: 'The repository is too large',
+  loadFailed: 'Loading failed',
+  retry: 'Try again',
+};
+
+export const TEXTS: Record<Lang, Record<Key, string>> = { de: DE, en: EN };
+export type TextKey = Key;
+
+/**
+ * §NF/accessibility/language/000039: the first browser language that the UI has, else German.
+ */
+export function pickLang(languages: readonly string[]): Lang {
+  for (const l of languages) {
+    const base = l.toLowerCase().split('-')[0];
+    if (base === 'de' || base === 'en') return base;
+  }
+  return 'de';
+}
+
+/** The texts of the app in the browser language. */
+@Injectable({ providedIn: 'root' })
+export class I18n {
+  readonly lang = signal<Lang>(
+    pickLang(typeof navigator === 'undefined' ? [] : (navigator.languages ?? [navigator.language])),
+  );
+  private readonly texts = computed(() => TEXTS[this.lang()]);
+
+  /** The text of a key; `{name}` takes the value of `params.name`. */
+  readonly t = (key: string, params: Record<string, string | number> = {}): string => {
+    const text = (this.texts() as Record<string, string>)[key] ?? key;
+    return text.replace(/\{(\w+)\}/g, (m, name: string) =>
+      name in params ? String(params[name]) : m,
+    );
+  };
+}

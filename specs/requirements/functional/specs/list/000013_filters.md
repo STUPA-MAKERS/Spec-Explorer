@@ -2,7 +2,7 @@
 id: "000013"
 title: The list filters by status and kind
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

@@ -2,7 +2,7 @@
 id: "000040"
 title: The browser loads nothing from other hosts
 kind: non-functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

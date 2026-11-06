@@ -2,7 +2,7 @@
 id: "000023"
 title: A spec without implementation shows it
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

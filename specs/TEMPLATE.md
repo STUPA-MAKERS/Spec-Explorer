@@ -2,7 +2,7 @@
 id: "NNNNNN"
 title: Short title of the rule
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: YYYY-MM-DD
 tests:

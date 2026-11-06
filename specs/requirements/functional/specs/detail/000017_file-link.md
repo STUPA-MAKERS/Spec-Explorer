@@ -2,7 +2,7 @@
 id: "000017"
 title: The detail links to the spec file
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

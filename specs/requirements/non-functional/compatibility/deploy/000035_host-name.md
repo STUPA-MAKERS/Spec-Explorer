@@ -2,7 +2,7 @@
 id: "000035"
 title: The explorer runs at specs.workflow.reutlingen.university
 kind: non-functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

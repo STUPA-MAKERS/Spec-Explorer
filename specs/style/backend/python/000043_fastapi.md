@@ -2,7 +2,7 @@
 id: "000043"
 title: The server is Python with FastAPI
 kind: style
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

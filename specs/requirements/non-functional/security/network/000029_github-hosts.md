@@ -2,7 +2,7 @@
 id: "000029"
 title: The server calls only GitHub
 kind: non-functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

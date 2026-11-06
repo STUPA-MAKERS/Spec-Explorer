@@ -2,7 +2,7 @@
 id: "000011"
 title: The list groups by kind, area and topic
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

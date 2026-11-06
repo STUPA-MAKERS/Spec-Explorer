@@ -2,7 +2,7 @@
 id: "000019"
 title: The detail lists the code references
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

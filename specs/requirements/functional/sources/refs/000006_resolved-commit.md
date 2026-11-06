@@ -2,7 +2,7 @@
 id: "000006"
 title: The page shows the commit of the source
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

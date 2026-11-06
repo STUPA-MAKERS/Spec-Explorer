@@ -2,7 +2,7 @@
 id: "000020"
 title: A code reference links to its line
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

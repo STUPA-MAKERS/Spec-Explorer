@@ -2,7 +2,7 @@
 id: "000055"
 title: Folder names are lower case kebab case
 kind: style
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation:

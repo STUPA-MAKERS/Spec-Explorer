@@ -2,7 +2,7 @@
 id: "000033"
 title: The cache holds at most 20 commits
 kind: non-functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

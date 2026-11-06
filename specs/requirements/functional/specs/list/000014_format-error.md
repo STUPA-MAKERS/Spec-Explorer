@@ -2,7 +2,7 @@
 id: "000014"
 title: A file with a format error stays in the list
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

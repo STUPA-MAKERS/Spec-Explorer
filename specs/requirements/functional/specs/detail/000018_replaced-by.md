@@ -2,7 +2,7 @@
 id: "000018"
 title: A replaced spec links to its successor
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

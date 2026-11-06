@@ -2,7 +2,7 @@
 id: "000005"
 title: A commit SHA has 7 to 40 hex characters
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

@@ -2,7 +2,7 @@
 id: "000007"
 title: A branch resolves again after 60 seconds
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

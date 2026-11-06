@@ -2,7 +2,7 @@
 id: "000003"
 title: The repository picker lists the public repositories
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

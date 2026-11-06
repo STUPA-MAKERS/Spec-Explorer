@@ -2,7 +2,7 @@
 id: "000041"
 title: Pages are built from ui-kit components
 kind: style
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

@@ -2,7 +2,7 @@
 id: "000042"
 title: The ui-kit is a git submodule
 kind: style
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

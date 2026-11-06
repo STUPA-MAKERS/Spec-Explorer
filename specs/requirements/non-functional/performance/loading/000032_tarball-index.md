@@ -2,7 +2,7 @@
 id: "000032"
 title: One commit is loaded once
 kind: non-functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

@@ -2,7 +2,7 @@
 id: "000036"
 title: The explorer is one container
 kind: non-functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

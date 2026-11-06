@@ -2,7 +2,7 @@
 id: "000026"
 title: The detail lists the specs that name each other
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

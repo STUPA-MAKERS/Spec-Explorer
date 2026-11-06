@@ -2,7 +2,7 @@
 id: "000001"
 title: The explorer reads only repositories of STUPA-MAKERS
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
 implementation: null

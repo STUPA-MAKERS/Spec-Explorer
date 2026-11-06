@@ -33,6 +33,7 @@ specs/
 | [F/references/code/000020](requirements/functional/references/code/000020_line-link.md) | A code reference links to its line | approved |
 | [F/references/code/000021](requirements/functional/references/code/000021_broken-references.md) | Broken references have their own list | approved |
 | [F/references/code/000071](requirements/functional/references/code/000071_reference-context.md) | A broken reference shows its lines | draft |
+| [F/references/code/000072](requirements/functional/references/code/000072_reference-search.md) | The search finds rule ID and path of a reference | draft |
 | [F/references/paths/000022](requirements/functional/references/paths/000022_implementation-paths.md) | The detail lists the implementation paths | approved |
 | [F/references/paths/000023](requirements/functional/references/paths/000023_not-implemented.md) | A spec without implementation shows it | approved |
 | [F/references/paths/000024](requirements/functional/references/paths/000024_tests.md) | The detail lists the tests | approved |

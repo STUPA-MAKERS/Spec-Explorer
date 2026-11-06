@@ -5,7 +5,9 @@ kind: style
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+implementation:
+  - .gitmodules
+  - frontend/package.json
 scope:
   - frontend
 ---

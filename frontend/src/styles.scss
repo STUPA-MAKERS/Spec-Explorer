@@ -1,0 +1,208 @@
+@use 'fonts';
+@use 'tokens';
+@use 'base';
+@use 'surface';
+@use 'skeleton';
+@use 'breakpoints' as bp;
+@use 'press';
+@use 'sass:meta';
+
+// tailwind.config.js disables preflight, so Tailwind adds utilities only. The utilities come last,
+// so they apply after the base styles.
+
+.admin-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+// Thin grey scrollbars on every scroll box. Chrome on Linux otherwise draws the wide classic bar
+// with a light track, which shows as a bright stripe in the dark theme. `scrollbar-color` inherits
+// from the root; `scrollbar-width` does not inherit, so it goes on every element. Its specificity
+// is zero, so a component that sets `scrollbar-width: none` still hides its bar.
+:root {
+  scrollbar-color: #5a5a5a transparent;
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+// Global, because the rows are projected content. Loaded here, so they keep their place in the
+// cascade after the utilities.
+@include meta.load-css('rowgroup');
+
+// The installed app neither bounces nor pulls to refresh, because an overscroll at the top reloaded
+// it in Chrome and moved the bars on iOS. `manipulation` stops the double-tap zoom; the pinch
+// zoom stops in `lockInstalledAppZoom` (zoom-lock.ts).
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  html,
+  body {
+    overscroll-behavior-y: none;
+    touch-action: manipulation;
+  }
+}
+
+// With `interactive-widget=resizes-content` (index.html) the bottom bar would stand between the
+// field and the keyboard. Focus alone is not enough, because Android closes the keyboard on the
+// back gesture and the field keeps the focus, so `frame--keyboard` (KeyboardService) decides.
+@media (pointer: coarse) {
+  .frame--phone.frame--keyboard:has(
+      :is(
+          input:not(
+              [type='checkbox'],
+              [type='radio'],
+              [type='range'],
+              [type='file'],
+              [type='button'],
+              [type='submit'],
+              [type='reset'],
+              [type='color']
+            ),
+          textarea,
+          [contenteditable]:not([contenteditable='false'])
+        ):not(app-bottom-bar *):focus
+    ) {
+    --app-bottom-inset: 0px;
+    --app-fab-clearance: 0px;
+
+    app-bottom-bar {
+      display: none;
+    }
+  }
+}
+
+.af--split .af__page {
+  @include surface.context(1);
+}
+
+// A pane page fills the free height of `.main` and its panes scroll inside themselves. A basis
+// of 0 keeps the rows from pushing it taller than the viewport. It pulls the bottom padding
+// back and keeps only `--pane-foot-gap`. A closed side sheet would still take the gap, so it gets
+// `display: contents`.
+.pane-page {
+  flex: 1 1 0;
+  min-height: 0;
+  margin-bottom: calc(var(--pane-foot-gap, 0px) - var(--main-pad-bottom, 0px));
+}
+.pane-page > app-side-sheet {
+  display: contents;
+}
+
+// Global, because the dialog of the UI kit sets no display on its host: with a box, an open dialog
+// in a flex column moves everything after it by one gap.
+app-dialog {
+  display: contents;
+}
+
+// list-geometry.contract.spec.ts fails if a page sets the list/detail geometry itself.
+@include meta.load-css('list-detail');
+
+:root {
+  --sheet-head-gap: 10px;
+}
+
+.sheet-title {
+  margin: 0;
+  font-size: var(--fs-d2);
+  line-height: var(--lh-d2);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-tight);
+  overflow-wrap: anywhere;
+}
+.sheet-line {
+  margin: 0;
+  min-width: 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-md);
+  line-height: var(--lh-h3);
+}
+@include bp.phone {
+  .sheet-title {
+    font-size: var(--fs-h1);
+    line-height: var(--lh-h1);
+  }
+}
+
+.sheet-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sheet-head-gap);
+  padding-bottom: 22px;
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+// The Markdown and the chat texts stay selectable on a touch screen;
+// `core/touch/touch-context-menu.ts` names the same elements.
+@media (hover: none) and (pointer: coarse) {
+  .mdv,
+  .chat__text {
+    @include press.selectable;
+  }
+}
+
+.sheet-back-link {
+  display: inline-flex;
+  align-items: center;
+  height: var(--control-height);
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-3);
+  color: var(--color-text);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  transition: scale var(--motion-xs) var(--ease-standard);
+  @include press.press;
+  @include press.chrome-text;
+}
+@media (hover: hover) {
+  .sheet-back-link:hover {
+    background: var(--color-surface-4);
+  }
+}
+
+// `clip` instead of `hidden`, because it makes no scroll container, so `position: sticky` keeps
+// working.
+@include bp.phone {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+
+// Global, because Formly draws the fields.
+.fe-form {
+  min-width: 0;
+  container-type: inline-size;
+}
+.fe-form .fe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  min-width: 0;
+}
+.fe-form .fe-grid > formly-field {
+  min-width: 0;
+}
+// A field that `visibleIf` hides keeps its empty `formly-field` host, which must take no cell.
+.fe-form .fe-grid > formly-field:empty {
+  display: none;
+}
+.fe-form .fe-grid > .fe-full {
+  grid-column: 1 / -1;
+}
+@container (max-width: 32rem) {
+  .fe-form .fe-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// The motion classes (`animate.enter`, `animate.leave`) and the route view transitions of the
+// kit. `onRouteViewTransition` sets `data-motion` on <html> while a route transition runs.
+@include meta.load-css('motion');
+
+// A change from `display: none` starts the animation again, so one rule covers every tab bar.
+[role='tabpanel']:not([hidden]) {
+  animation: motion-fade-in var(--motion-base) var(--ease-standard);
+}

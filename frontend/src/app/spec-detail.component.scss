@@ -1,0 +1,17 @@
+@use 'breakpoints' as bp;
+:host { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
+.sd { display: flex; flex: 1 1 auto; flex-direction: column; gap: var(--space-5); min-width: 0; }
+.sd--split { padding: 0 var(--space-6) var(--space-6); border-radius: var(--radius-2xl); background: var(--color-surface-1); }
+.sd__line { display: flex; flex-wrap: wrap; align-items: baseline; }
+.sd__dot { margin-inline: 8px; color: var(--color-text-subtle); }
+.sd__note { margin-top: var(--space-2); }
+.sd__err { display: block; }
+.sd__link { color: var(--color-accent-text); font-weight: var(--fw-semibold); }
+.sd__cols { display: flex; flex: 1 1 auto; flex-wrap: wrap; gap: 18px 28px; align-items: flex-start; min-height: 0; }
+.sd__col { display: flex; flex-direction: column; gap: 18px; }
+.sd__col:first-child { flex: 1.4 1 0; min-width: min(100%, 22.5rem); }
+.sd__col:last-child { flex: 1 1 0; min-width: min(100%, 20rem); }
+.sd__sec { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; --section-gap: var(--space-2); }
+.sd__none { margin: 0; color: var(--color-text-muted); }
+.sd__row { --li-gap: var(--space-3); }
+.sd__path ::ng-deep .li__titleText { font-family: var(--font-mono); font-size: var(--fs-small); }

@@ -5,7 +5,10 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "frontend/src/app/routes.spec.ts:routes.urlForm"
+implementation:
+  - frontend/src/app/routes.ts
 scope:
   - frontend
 ---

@@ -5,7 +5,10 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_specindex.py:test_every_spec_file"
+implementation:
+  - backend/app/specindex.py
 scope:
   - backend
   - frontend

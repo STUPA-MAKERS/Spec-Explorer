@@ -5,7 +5,12 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "frontend/src/app/routes.spec.ts:routes.defaultSource"
+  - "backend/tests/test_api.py:test_default_source"
+implementation:
+  - frontend/src/app/routes.ts
+  - backend/app/main.py
 scope:
   - frontend
 ---

@@ -5,7 +5,8 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+implementation:
+  - deploy/README.md
 scope:
   - deploy
 ---

@@ -5,7 +5,13 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_github.py:test_size_limits"
+  - "backend/tests/test_github.py:test_size_limit_streamed"
+  - "backend/tests/test_specindex.py:test_size_limit"
+implementation:
+  - backend/app/github.py
+  - backend/app/specindex.py
 scope:
   - backend
 ---

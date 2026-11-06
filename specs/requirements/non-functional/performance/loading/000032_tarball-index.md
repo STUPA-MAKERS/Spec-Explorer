@@ -5,7 +5,12 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_cache.py:test_index_cache"
+  - "backend/tests/test_github.py:test_tarball_index"
+implementation:
+  - backend/app/cache.py
+  - backend/app/github.py
 scope:
   - backend
 ---

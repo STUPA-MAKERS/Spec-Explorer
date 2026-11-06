@@ -5,7 +5,10 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_github.py:test_github_hosts"
+implementation:
+  - backend/app/github.py
 scope:
   - backend
 ---

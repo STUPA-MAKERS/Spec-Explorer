@@ -5,7 +5,10 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "frontend/src/app/app.spec.ts:noThirdParty"
+implementation:
+  - frontend/src/index.html
 scope:
   - frontend
 ---

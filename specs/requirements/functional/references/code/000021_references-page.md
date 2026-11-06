@@ -5,7 +5,13 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_specindex.py:test_broken_references"
+  - "frontend/src/app/model.spec.ts:references.refRows"
+  - "frontend/src/app/model.spec.ts:references.specFilter"
+implementation:
+  - backend/app/specindex.py
+  - frontend/src/app/refs.component.ts
 scope:
   - backend
   - frontend

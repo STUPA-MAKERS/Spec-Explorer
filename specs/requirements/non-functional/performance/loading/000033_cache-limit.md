@@ -5,7 +5,10 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_cache.py:test_cache_limit"
+implementation:
+  - backend/app/cache.py
 scope:
   - backend
 ---

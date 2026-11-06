@@ -2,10 +2,15 @@
 id: "000071"
 title: A broken reference shows its lines
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_specindex.py:test_reference_context"
+  - "frontend/src/app/model.spec.ts:codeExcerpt.excerpt"
+implementation:
+  - backend/app/specindex.py
+  - frontend/src/app/model.ts
 scope:
   - backend
   - frontend

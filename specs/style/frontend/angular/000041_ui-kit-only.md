@@ -5,7 +5,8 @@ kind: style
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+implementation:
+  - frontend/src/app
 scope:
   - frontend
 ---

@@ -5,7 +5,11 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "frontend/src/app/markdown.spec.ts:noRawHtml"
+implementation:
+  - frontend/src/app/spec-detail.component.html
+  - frontend/src/app/ref-detail.component.ts
 scope:
   - frontend
 ---

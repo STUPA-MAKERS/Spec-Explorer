@@ -5,7 +5,12 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_github.py:test_token_server_only"
+  - "backend/tests/test_api.py:test_token_not_in_responses"
+implementation:
+  - backend/app/github.py
+  - backend/app/main.py
 scope:
   - backend
 ---

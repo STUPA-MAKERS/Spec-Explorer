@@ -5,7 +5,12 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "frontend/src/app/spec-detail.component.spec.ts:SpecDetailComponent.fileLink"
+  - "frontend/src/app/model.spec.ts:blobUrl.fileLink"
+implementation:
+  - frontend/src/app/spec-detail.component.ts
+  - frontend/src/app/model.ts
 scope:
   - frontend
 ---

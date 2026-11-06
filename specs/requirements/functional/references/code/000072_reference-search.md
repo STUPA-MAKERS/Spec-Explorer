@@ -2,10 +2,13 @@
 id: "000072"
 title: The search finds rule ID and path of a reference
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "frontend/src/app/model.spec.ts:references.refSearch"
+implementation:
+  - frontend/src/app/model.ts
 scope:
   - frontend
 ---

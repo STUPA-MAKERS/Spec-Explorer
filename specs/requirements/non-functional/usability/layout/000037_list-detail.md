@@ -5,7 +5,9 @@ kind: non-functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+implementation:
+  - frontend/src/app/explorer.component.html
+  - frontend/src/app/refs.component.ts
 scope:
   - frontend
 ---

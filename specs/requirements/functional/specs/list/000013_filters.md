@@ -5,7 +5,11 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "frontend/src/app/model.spec.ts:filterSpecs.statusAndKind"
+implementation:
+  - frontend/src/app/model.ts
+  - frontend/src/app/explorer.component.html
 scope:
   - frontend
 ---

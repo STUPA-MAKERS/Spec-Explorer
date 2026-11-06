@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "baseUrl": "./",
+    "paths": {
+      "@stupa-makers/ui-kit": ["vendor/ui-kit/src/public-api.ts"],
+      "@stupa-makers/ui-kit/shell": ["vendor/ui-kit/shell/src/public-api.ts"],
+      "@stupa-makers/ui-kit/markdown-view": ["vendor/ui-kit/markdown-view/src/public-api.ts"]
+    }
+  },
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

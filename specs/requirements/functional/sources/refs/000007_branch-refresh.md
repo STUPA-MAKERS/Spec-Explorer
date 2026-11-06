@@ -5,7 +5,10 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_github.py:test_branch_refresh"
+implementation:
+  - backend/app/github.py
 scope:
   - backend
 ---

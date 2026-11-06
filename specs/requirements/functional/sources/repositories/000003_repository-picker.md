@@ -5,7 +5,11 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "backend/tests/test_github.py:test_repository_list"
+implementation:
+  - backend/app/github.py
+  - frontend/src/app/source.component.ts
 scope:
   - backend
   - frontend

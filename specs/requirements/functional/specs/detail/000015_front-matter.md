@@ -5,7 +5,10 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-06
-implementation: null
+tests:
+  - "frontend/src/app/spec-detail.component.spec.ts:SpecDetailComponent.frontMatter"
+implementation:
+  - frontend/src/app/spec-detail.component.html
 scope:
   - frontend
 ---

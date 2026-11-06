@@ -32,6 +32,7 @@ specs/
 | [F/references/code/000019](requirements/functional/references/code/000019_section-references.md) | The detail lists the code references | approved |
 | [F/references/code/000020](requirements/functional/references/code/000020_line-link.md) | A code reference links to its line | approved |
 | [F/references/code/000021](requirements/functional/references/code/000021_broken-references.md) | Broken references have their own list | approved |
+| [F/references/code/000071](requirements/functional/references/code/000071_reference-context.md) | A broken reference shows its lines | draft |
 | [F/references/paths/000022](requirements/functional/references/paths/000022_implementation-paths.md) | The detail lists the implementation paths | approved |
 | [F/references/paths/000023](requirements/functional/references/paths/000023_not-implemented.md) | A spec without implementation shows it | approved |
 | [F/references/paths/000024](requirements/functional/references/paths/000024_tests.md) | The detail lists the tests | approved |
@@ -67,7 +68,7 @@ specs/
 | [NF/security/content/000031](requirements/non-functional/security/content/000031_no-raw-html.md) | Spec Markdown renders without raw HTML | approved |
 | [NF/security/network/000029](requirements/non-functional/security/network/000029_github-hosts.md) | The server calls only GitHub | approved |
 | [NF/security/network/000030](requirements/non-functional/security/network/000030_token-server-only.md) | A GitHub token stays on the server | approved |
-| [NF/usability/layout/000037](requirements/non-functional/usability/layout/000037_list-detail.md) | The specs page uses list and detail | approved |
+| [NF/usability/layout/000037](requirements/non-functional/usability/layout/000037_list-detail.md) | The pages Specs and Verweise use list and detail | approved |
 | [NF/usability/layout/000038](requirements/non-functional/usability/layout/000038_system-theme.md) | The theme follows the system | approved |
 | [S/backend/python/000043](style/backend/python/000043_fastapi.md) | The server is Python with FastAPI | approved |
 | [S/frontend/angular/000041](style/frontend/angular/000041_ui-kit-only.md) | Pages are built from ui-kit components | approved |

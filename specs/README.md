@@ -10,6 +10,7 @@ specs/
     backend/   python
     frontend/  angular
     shared/    license
+    specs/     content, format, structure
   requirements/
     functional/
       references/  code, paths, specs
@@ -72,3 +73,29 @@ specs/
 | [S/frontend/angular/000041](style/frontend/angular/000041_ui-kit-only.md) | Pages are built from ui-kit components | draft |
 | [S/frontend/angular/000042](style/frontend/angular/000042_ui-kit-submodule.md) | The ui-kit is a git submodule | draft |
 | [S/shared/license/000044](style/shared/license/000044_gpl.md) | The repository is GPL-3.0-or-later | draft |
+| [S/specs/content/000059](style/specs/content/000059_only-the-rule.md) | A spec contains only the rule | draft |
+| [S/specs/content/000060](style/specs/content/000060_one-thing.md) | One rule controls one thing | draft |
+| [S/specs/content/000061](style/specs/content/000061_examinable.md) | A rule can be examined | draft |
+| [S/specs/content/000062](style/specs/content/000062_must-and-must-not.md) | The rule text uses must and must not | draft |
+| [S/specs/content/000063](style/specs/content/000063_reason.md) | A rule gives its reason | draft |
+| [S/specs/content/000064](style/specs/content/000064_test.md) | A rule names its test | draft |
+| [S/specs/content/000065](style/specs/content/000065_current-rule.md) | A spec states the current rule | draft |
+| [S/specs/content/000066](style/specs/content/000066_ste.md) | A spec is written in ASD-STE100 | draft |
+| [S/specs/content/000067](style/specs/content/000067_product-terms.md) | Product terms stay as the UI shows them | draft |
+| [S/specs/format/000045](style/specs/format/000045_copy-the-template.md) | A new spec starts as a copy of the template | draft |
+| [S/specs/format/000046](style/specs/format/000046_front-matter.md) | A spec starts with a YAML front matter | draft |
+| [S/specs/format/000047](style/specs/format/000047_status.md) | The status shows the approval | draft |
+| [S/specs/format/000048](style/specs/format/000048_one-rule-per-file.md) | One file holds one rule | draft |
+| [S/specs/format/000049](style/specs/format/000049_rule-id.md) | The rule ID has kind, path and number | draft |
+| [S/specs/format/000050](style/specs/format/000050_unique-number.md) | The number is the identity of a rule | draft |
+| [S/specs/format/000051](style/specs/format/000051_moved-rule.md) | A moved rule keeps its number | draft |
+| [S/specs/format/000052](style/specs/format/000052_labels.md) | Labels in a rule are fixed | draft |
+| [S/specs/format/000068](style/specs/format/000068_section-sign-reference.md) | Code refers to a rule with the § sign | draft |
+| [S/specs/format/000069](style/specs/format/000069_file-name.md) | The file name is number and name | draft |
+| [S/specs/structure/000053](style/specs/structure/000053_precedence.md) | A spec wins over other guidance | draft |
+| [S/specs/structure/000054](style/specs/structure/000054_tree.md) | The tree sorts by kind, then by area and topic | draft |
+| [S/specs/structure/000055](style/specs/structure/000055_folder-names.md) | Folder names are lower case kebab case | draft |
+| [S/specs/structure/000056](style/specs/structure/000056_one-place.md) | A rule is written in one place | draft |
+| [S/specs/structure/000057](style/specs/structure/000057_index.md) | The index lists every rule | draft |
+| [S/specs/structure/000058](style/specs/structure/000058_change-process.md) | A change goes through a pull request | draft |
+| [S/specs/structure/000070](style/specs/structure/000070_spec-first.md) | A change request starts as a spec | draft |

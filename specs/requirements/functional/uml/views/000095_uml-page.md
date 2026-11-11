@@ -2,7 +2,7 @@
 id: "000095"
 title: The page UML shows the views of specs/uml
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-11
 implementation: null

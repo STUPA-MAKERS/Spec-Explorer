@@ -2,7 +2,7 @@
 id: "000098"
 title: An element opens a detail with its path and its specs
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-11
 implementation: null

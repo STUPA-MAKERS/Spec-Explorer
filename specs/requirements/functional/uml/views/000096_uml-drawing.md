@@ -2,7 +2,7 @@
 id: "000096"
 title: A view is drawn as a diagram with the colours of the kit
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-11
 implementation: null

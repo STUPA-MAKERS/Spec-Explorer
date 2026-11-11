@@ -5,7 +5,13 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-11
-implementation: null
+tests:
+  - "frontend/src/app/uml.spec.ts:uml.elementsForSpec"
+  - "frontend/src/app/pages.spec.ts:pages.specUml"
+implementation:
+  - frontend/src/app/uml.ts
+  - frontend/src/app/spec-detail.component.ts
+  - frontend/src/app/spec-detail.component.html
 scope:
   - frontend
 ---

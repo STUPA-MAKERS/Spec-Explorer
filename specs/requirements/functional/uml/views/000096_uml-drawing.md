@@ -5,7 +5,19 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-11
-implementation: null
+tests:
+  - "frontend/src/app/uml-layout.spec.ts:umlLayout.layoutComponents"
+  - "frontend/src/app/uml-layout.spec.ts:umlLayout.umlGraph"
+  - "frontend/src/app/uml-diagram.component.spec.ts:UmlDiagramComponent.drawing"
+  - "frontend/src/app/uml-diagram.component.spec.ts:UmlDiagramComponent.zoom"
+  - "frontend/src/app/uml-diagram.component.spec.ts:elkLayout.layoutUml"
+  - "frontend/src/app/uml.spec.ts:uml.filterClasses"
+implementation:
+  - frontend/src/app/uml-layout.ts
+  - frontend/src/app/uml-diagram.component.ts
+  - frontend/src/app/uml-diagram.component.scss
+  - frontend/src/app/uml.ts
+  - frontend/src/styles.scss
 scope:
   - frontend
 ---

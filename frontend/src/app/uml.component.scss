@@ -1,0 +1,37 @@
+@use 'breakpoints' as bp;
+
+/* The page shares the layout of `Specs` (explorer.component.scss); the list column holds the
+   drawing, so it takes the width that the detail column leaves. */
+:host {
+  --ld-list-width: calc(100% - var(--ld-gap, 1rem) - clamp(20rem, 28vw, 26rem));
+}
+
+.um__mode {
+  margin-inline-start: auto;
+}
+
+.um__diagram {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-block-end: var(--space-4);
+}
+
+.um__file {
+  margin: 0;
+}
+.um__errors {
+  margin: var(--space-2) 0 0;
+  padding-inline-start: var(--space-5);
+  text-align: start;
+}
+
+@include bp.phone {
+  .um__mode {
+    margin-inline-start: 0;
+  }
+  .um__diagram {
+    min-height: 60vh;
+  }
+}

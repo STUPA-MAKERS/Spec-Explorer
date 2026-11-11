@@ -17,6 +17,7 @@ import { DataService } from './data.service';
 import { ExplorerComponent, STATUS_KIND } from './explorer.component';
 import { I18n } from './i18n';
 import { statusOf, type Spec } from './model';
+import { elementsForSpec, viewLabel } from './uml';
 
 /**
  * The detail of one spec: the front matter, the rule text and every reference.
@@ -61,6 +62,17 @@ export class SpecDetailComponent {
     return this.i18n.lang() === 'de' ? `${m[3]}.${m[2]}.${m[1]}` : d;
   });
   /** §F/references/specs/000026 and §F/specs/detail/000018: the specs around this one. */
+  /** §F/uml/links/000099: the UML elements that the spec implements. */
+  readonly umlHits = computed(() => {
+    const s = this.spec();
+    if (!s) return [];
+    return elementsForSpec(this.data.index()?.uml ?? [], s).map((h) => ({
+      key: `${h.view.key}/${h.element.id}`,
+      title: h.element.name,
+      sub: viewLabel(h.view, this.t),
+      link: ['/', this.data.repo(), this.data.ref(), 'uml', h.view.key, h.element.id],
+    }));
+  });
   readonly linked = computed(() => {
     const s = this.spec();
     if (!s) return [];

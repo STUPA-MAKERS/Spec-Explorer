@@ -136,8 +136,8 @@ export class SourceComponent {
   private readonly http = inject(HttpClient);
   readonly t = inject(I18n).t;
   readonly org = ORG;
-  /** The page that the chips switch: the specs or the references. */
-  readonly page = input<'specs' | 'refs'>('specs');
+  /** The page that the chips switch: the specs, the references or the UML views. */
+  readonly page = input<'specs' | 'refs' | 'uml'>('specs');
 
   readonly dialog = signal(false);
   readonly tab = signal('branch');
@@ -210,7 +210,9 @@ export class SourceComponent {
 
   go(repo: string, ref: string): void {
     this.dialog.set(false);
-    const base = this.page() === 'refs' ? ['/verweise', repo, ref] : ['/', repo, ref];
+    const page = this.page();
+    const base =
+      page === 'refs' ? ['/verweise', repo, ref] : page === 'uml' ? ['/', repo, ref, 'uml'] : ['/', repo, ref];
     void this.router.navigate(base);
   }
 }

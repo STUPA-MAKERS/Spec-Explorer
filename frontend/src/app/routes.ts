@@ -15,6 +15,8 @@ import { RefNoneComponent } from './ref-none.component';
 import { RefsComponent } from './refs.component';
 import { SpecDetailComponent } from './spec-detail.component';
 import { SpecNoneComponent } from './spec-none.component';
+import { UmlComponent } from './uml.component';
+import { UmlElementComponent, UmlNoneComponent } from './uml-element.component';
 
 /** §F/sources/refs/000009: the rule ID keeps its `/` in the URL, so it spans segments. */
 export function ruleIdMatcher(segments: UrlSegment[]): UrlMatchResult | null {
@@ -49,6 +51,22 @@ export const routes: Routes = [
     ],
   },
   { path: ':repo', pathMatch: 'full', canActivate: [toDefaultBranch], children: [] },
+  // §F/uml/views/000095: the URL holds the repository, the ref and the view.
+  {
+    path: ':repo/:ref/uml',
+    component: UmlComponent,
+    data: { wide: true },
+    children: [{ path: '', component: UmlNoneComponent }],
+  },
+  {
+    path: ':repo/:ref/uml/:view',
+    component: UmlComponent,
+    data: { wide: true },
+    children: [
+      { path: '', component: UmlNoneComponent },
+      { path: ':el', component: UmlElementComponent },
+    ],
+  },
   {
     path: ':repo/:ref',
     component: ExplorerComponent,

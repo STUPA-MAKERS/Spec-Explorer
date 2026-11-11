@@ -12,7 +12,7 @@ import { I18n } from './i18n';
     <app-shell
       [frame]="'rail'"
       [nav]="nav()"
-      [barKeys]="['specs', 'refs']"
+      [barKeys]="['specs', 'refs', 'uml']"
       [brand]="brand"
       [searchable]="false"
       [more]="false"
@@ -34,6 +34,7 @@ export class App {
     return [
       { key: 'specs', path: `/${source}`, label: t('specs'), icon: 'document', place: 'main' },
       { key: 'refs', path: `/verweise/${source}`, label: t('refs'), icon: 'link', place: 'main' },
+      { key: 'uml', path: `/${source}/uml`, label: t('uml'), icon: 'shapes', place: 'main' },
     ];
   });
 

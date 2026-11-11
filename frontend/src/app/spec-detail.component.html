@@ -130,6 +130,16 @@
             </div>
           </app-section>
         }
+
+        @if (umlHits().length) {
+          <app-section class="sd__sec" [heading]="t('uml')">
+            <div class="rowgroup">
+              @for (x of umlHits(); track x.key) {
+                <app-list-item class="sd__row" [title]="x.title" [sub]="x.sub" [link]="x.link" />
+              }
+            </div>
+          </app-section>
+        }
       </div>
     </div>
   </article>

@@ -5,7 +5,13 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-11
-implementation: null
+tests:
+  - "frontend/src/app/uml.spec.ts:uml.specsForPath"
+  - "frontend/src/app/uml-diagram.component.spec.ts:UmlDiagramComponent.pick"
+  - "frontend/src/app/pages.spec.ts:pages.uml"
+implementation:
+  - frontend/src/app/uml.ts
+  - frontend/src/app/uml-element.component.ts
 scope:
   - frontend
 ---

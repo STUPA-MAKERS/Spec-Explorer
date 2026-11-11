@@ -16,6 +16,7 @@ specs/
       references/  code, paths, specs
       sources/     refs, repositories
       specs/       detail, list
+      uml/         links, views
     non-functional/
       accessibility/  conformance, interaction, language, perception, statement
       compatibility/  deploy
@@ -57,6 +58,11 @@ specs/
 | [F/specs/list/000012](requirements/functional/specs/list/000012_search.md) | The search finds number, rule ID and title | approved |
 | [F/specs/list/000013](requirements/functional/specs/list/000013_filters.md) | The list filters by status and kind | approved |
 | [F/specs/list/000014](requirements/functional/specs/list/000014_format-error.md) | A file with a format error stays in the list | approved |
+| [F/uml/links/000098](requirements/functional/uml/links/000098_uml-element-detail.md) | An element opens a detail with its path and its specs | approved |
+| [F/uml/links/000099](requirements/functional/uml/links/000099_spec-uml-elements.md) | The detail of a spec lists its UML elements | approved |
+| [F/uml/views/000095](requirements/functional/uml/views/000095_uml-page.md) | The page UML shows the views of specs/uml | approved |
+| [F/uml/views/000096](requirements/functional/uml/views/000096_uml-drawing.md) | A view is drawn as a diagram with the colours of the kit | approved |
+| [F/uml/views/000097](requirements/functional/uml/views/000097_uml-text-alternative.md) | Each view has a list with the same content | approved |
 | [NF/accessibility/conformance/000073](requirements/non-functional/accessibility/conformance/000073_wcag-22-aa.md) | Every view meets WCAG 2.2 level AA | approved |
 | [NF/accessibility/conformance/000074](requirements/non-functional/accessibility/conformance/000074_axe-every-route.md) | Every route passes an axe check in both themes | approved |
 | [NF/accessibility/conformance/000075](requirements/non-functional/accessibility/conformance/000075_template-lint.md) | The template lint has the accessibility rules | approved |

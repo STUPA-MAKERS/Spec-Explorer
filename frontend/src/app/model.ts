@@ -3,6 +3,8 @@
  * code excerpt of a reference. The functions hold no state, so the unit tests call them directly.
  */
 
+import type { UmlView } from './uml';
+
 export interface PathRef {
   path: string;
   exists: boolean;
@@ -52,6 +54,8 @@ export interface SourceIndex {
   sha: string;
   specs: Spec[];
   broken: CodeRef[];
+  /** §F/uml/views/000095: the views of `specs/uml/`; empty when the source has none. */
+  uml: UmlView[];
 }
 
 export interface RepoRefs {

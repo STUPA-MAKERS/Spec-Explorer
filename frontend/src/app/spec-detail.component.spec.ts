@@ -52,7 +52,7 @@ async function show(s: Spec): Promise<void> {
       const data = TestBed.inject(DataService);
       data.repo.set('STUPA-Workflow');
       data.ref.set('main');
-      const index: SourceIndex = { repo: 'STUPA-Workflow', ref: 'main', sha: SHA, specs: [s], broken: [] };
+      const index: SourceIndex = { repo: 'STUPA-Workflow', ref: 'main', sha: SHA, specs: [s], broken: [], uml: [] };
       data.index.set(index);
     },
   });

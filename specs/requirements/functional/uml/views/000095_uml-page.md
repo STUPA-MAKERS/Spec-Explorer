@@ -5,7 +5,20 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-11
-implementation: null
+tests:
+  - "backend/tests/test_umlindex.py:test_views_in_order"
+  - "backend/tests/test_umlindex.py:test_no_uml_folder"
+  - "backend/tests/test_umlindex.py:test_format_error_keeps_the_file"
+  - "frontend/src/app/pages.spec.ts:pages.umlBroken"
+  - "frontend/src/app/pages.spec.ts:pages.umlNone"
+  - "frontend/src/app/pages.spec.ts:pages.umlFirstView"
+  - "frontend/src/app/uml.spec.ts:uml.kindOf"
+implementation:
+  - backend/app/umlindex.py
+  - frontend/src/app/routes.ts
+  - frontend/src/app/app.ts
+  - frontend/src/app/uml.component.ts
+  - frontend/src/app/uml.component.html
 scope:
   - backend
   - frontend

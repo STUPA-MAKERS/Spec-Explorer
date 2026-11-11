@@ -46,13 +46,30 @@ const INDEX: SourceIndex = {
       mentions: ['F/a/b/000002'],
       replaces: ['F/a/b/000003'],
       tests: [{ entry: 'x.py:test_a', path: 'x.py', fn: 'test_a', line: 3, exists: true }],
-      implementation: [{ path: 'backend', exists: true }],
+      implementation: [{ path: 'backend', exists: true }, { path: 'backend/app/modules/voting', exists: true }],
       codeRefs: [{ ref: 'F/a/b/000001', path: 'backend/x.py', line: 5, text: '', from: 1, context: ['a'] }],
     }),
     spec('F/a/b/000002', 'Second rule', { status: 'draft', mentionedBy: ['F/a/b/000001'] }),
     spec('F/a/b/000003', 'Old rule', { status: 'replaced', replacedBy: 'F/a/b/000001' }),
   ],
   broken: [{ ref: 'F/a/b/000099', path: 'frontend/y.ts', line: 2, text: '', from: 1, context: ['x', 'y'] }],
+  uml: [
+    {
+      key: 'components',
+      file: 'specs/uml/components.json',
+      errors: [],
+      data: {
+        view: 'components',
+        title: 'Backend modules',
+        elements: [
+          { id: 'admin', name: 'admin', path: 'backend/app/modules/admin', layer: 1 },
+          { id: 'voting', name: 'voting', path: 'backend/app/modules/voting', layer: 3 },
+        ],
+        edges: [{ from: 'admin', to: 'voting', count: 4 }],
+      },
+    },
+    { key: 'classes', file: 'specs/uml/classes.json', errors: ["key 'title' is missing"], data: null },
+  ],
 };
 
 let http: HttpTestingController;
@@ -147,6 +164,49 @@ describe('pages', () => {
     await harness.navigateByUrl('/verweise/STUPA-Workflow/main');
     settle(harness, { ...INDEX, specs: [], broken: [] });
     expect(screen.getAllByText('Kein Verweis mit §').length).toBeGreaterThan(0);
+  });
+
+  it('uml: the view, the list and the detail with its specs (§F/uml/views/000095, 000097, §F/uml/links/000098)', async () => {
+    const harness = await open('/STUPA-Workflow/main/uml/components');
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(screen.getAllByText('Komponenten').length).toBeGreaterThan(0);
+    expect(screen.getByRole('img', { name: /Diagramm Komponenten mit 2 Elementen/ })).toBeTruthy();
+    screen.getByRole('radio', { name: 'Liste' }).click();
+    harness.detectChanges();
+    expect(screen.getByText('→ voting · 4')).toBeTruthy();
+    await harness.navigateByUrl('/STUPA-Workflow/main/uml/components/voting');
+    harness.detectChanges();
+    expect(screen.getAllByText('Schicht 3').length).toBeGreaterThan(0);
+    expect(screen.getByText('← admin')).toBeTruthy();
+    expect(screen.getByText('First rule')).toBeTruthy();
+  });
+
+  it('umlBroken: a broken file shows the file and the error (§F/uml/views/000095)', async () => {
+    await open('/STUPA-Workflow/main/uml/classes');
+    expect(screen.getByText('Die Datei verletzt das UML-Format')).toBeTruthy();
+    expect(screen.getByText("key 'title' is missing")).toBeTruthy();
+  });
+
+  it('umlNone: a ref without specs/uml shows Keine UML-Daten', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/STUPA-Workflow/main/uml');
+    settle(harness, { ...INDEX, uml: [] });
+    expect(screen.getByText('Keine UML-Daten')).toBeTruthy();
+  });
+
+  it('umlFirstView: the page without a view opens the first view', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/STUPA-Workflow/main/uml');
+    settle(harness);
+    await harness.fixture.whenStable();
+    expect(TestBed.inject(Router).url).toBe('/STUPA-Workflow/main/uml/components');
+  });
+
+  it('specUml: the detail of a spec lists its UML elements (§F/uml/links/000099)', async () => {
+    await open('/STUPA-Workflow/main/F/a/b/000001');
+    expect(screen.getByText('UML')).toBeTruthy();
+    expect(screen.getByText('voting')).toBeTruthy();
   });
 
   it('source: the chips switch the ref and the dialog checks a SHA (§F/sources/refs/000004)', async () => {

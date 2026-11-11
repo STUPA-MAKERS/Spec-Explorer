@@ -92,6 +92,7 @@ describe('references', () => {
     sha: 'a'.repeat(40),
     specs: [spec('F/a/b/000001', 'A', { codeRefs: [ref('F/a/b/000001', 'backend/app/x.py', 3)] })],
     broken: [ref('F/a/b/000099', 'frontend/src/y.ts', 9)],
+    uml: [],
   };
 
   it('refRows: every reference, the ones without a spec first (§F/references/code/000021)', () => {

@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 from pathlib import PurePosixPath
 from typing import Any
 
+from app.umlindex import build_uml
+
 # §F/references/code/000019: the pattern of the format check.
 SECTION_REF = re.compile(r"§ ?((?:F|NF|S)/[a-z0-9/-]+/[0-9]{6})")
 # §F/references/specs/000026: a rule ID in the body of a spec, without `§`.
@@ -371,4 +373,4 @@ def build_index(tree: Tree) -> dict[str, Any]:
     for spec in specs:
         spec["mentionedBy"] = sorted(s["id"] for s in specs if spec["id"] in s["mentions"])
         spec["replaces"] = sorted(s["id"] for s in specs if s["replacedBy"] == spec["id"])
-    return {"specs": specs, "broken": broken}
+    return {"specs": specs, "broken": broken, "uml": build_uml(tree)}

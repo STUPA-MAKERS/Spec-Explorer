@@ -1,0 +1,122 @@
+<div class="ex um" [class.ex--split]="split()">
+  <app-list-detail [detailOpen]="selectedId() !== null" (back)="closeDetail()">
+    <section list class="ld-pane ex__pane" aria-labelledby="um-title">
+      <app-page-header [pane]="true" titleId="um-title" [title]="t('uml')" />
+
+      <app-sticky-bar class="ld-pane__filters">
+        <div class="ex__chips" role="group" [attr.aria-label]="t('source')">
+          <app-source page="uml" />
+        </div>
+        @if (views().length) {
+          <div class="ex__chips" role="group" [attr.aria-label]="t('filter')">
+            <app-filter-select
+              class="ex__chip"
+              [label]="t('uml.view')"
+              [options]="viewOptions()"
+              [value]="view()"
+              [text]="viewText()"
+              (valueChange)="pickView($event)"
+              filled
+            />
+            @if (kind() === 'classes' && current()?.data) {
+              <app-filter-select
+                class="ex__chip"
+                [label]="t('uml.module')"
+                [options]="moduleOptions()"
+                [value]="module()"
+                [text]="moduleText()"
+                (valueChange)="pickedModule.set($event)"
+                filled
+              />
+            }
+            <app-segmented
+              class="um__mode"
+              [options]="modeOptions()"
+              [ariaLabel]="t('uml.mode')"
+              [value]="mode()"
+              (valueChange)="mode.set($any($event))"
+            />
+          </div>
+        }
+      </app-sticky-bar>
+
+      @if (data.error(); as status) {
+        <div class="ex__scroll">
+          <app-empty-state icon="alert" [heading]="errorText(status)">
+            <app-button variant="text" size="sm" (click)="data.reload()">{{ t('retry') }}</app-button>
+          </app-empty-state>
+        </div>
+      } @else if (data.index() && !views().length) {
+        <div class="ex__scroll">
+          <app-empty-state icon="shapes" [heading]="t('uml.none')" />
+        </div>
+      } @else if (current(); as v) {
+        @if (v.errors.length) {
+          <div class="ex__scroll">
+            <app-empty-state icon="alert" [heading]="t('uml.broken')">
+              <p class="mono um__file">{{ v.file }}</p>
+              <ul class="um__errors">
+                @for (e of v.errors; track $index) {
+                  <li>{{ e }}</li>
+                }
+              </ul>
+            </app-empty-state>
+          </div>
+        } @else if (mode() === 'diagram') {
+          <div class="um__diagram">
+            @if (layout(); as l) {
+              <app-uml-diagram
+                [layout]="l"
+                [selected]="selectedId()"
+                [state]="kind() === 'state'"
+                [label]="diagramLabel()"
+                [zoomLabel]="t('uml.zoom')"
+                [inLabel]="t('uml.zoomIn')"
+                [outLabel]="t('uml.zoomOut')"
+                [fitLabel]="t('uml.fit')"
+                (pick)="pick($event)"
+              />
+            }
+          </div>
+        } @else {
+          <div class="ex__scroll" appScrollFade="y">
+            @for (r of rows(); track r.element.id) {
+              <app-list-group [label]="r.element.name">
+                <div class="ex__rows rowgroup" role="list">
+                  <app-list-item
+                    role="listitem"
+                    class="ex__row"
+                    [title]="r.element.name"
+                    [sub]="rowSub(r)"
+                    [link]="elementLink(r.element.id)"
+                    [selected]="r.element.id === selectedId()"
+                  />
+                  @for (e of r.outgoing; track $index) {
+                    <app-list-item
+                      role="listitem"
+                      class="ex__row"
+                      [title]="'→ ' + edgeText(e, e.to)"
+                      [link]="elementLink(e.to)"
+                    />
+                  }
+                  @for (e of r.incoming; track $index) {
+                    <app-list-item
+                      role="listitem"
+                      class="ex__row"
+                      [title]="'← ' + edgeText(e, e.from)"
+                      [link]="elementLink(e.from)"
+                    />
+                  }
+                </div>
+              </app-list-group>
+            }
+          </div>
+        }
+      }
+    </section>
+
+    <div detail class="ex__detail">
+      <router-outlet />
+    </div>
+  </app-list-detail>
+</div>

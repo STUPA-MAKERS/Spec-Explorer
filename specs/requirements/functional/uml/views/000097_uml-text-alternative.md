@@ -5,7 +5,13 @@ kind: functional
 status: approved
 owner: frederikbeimgraben
 updated: 2026-11-11
-implementation: null
+tests:
+  - "frontend/src/app/uml.spec.ts:uml.umlRows"
+  - "frontend/src/app/pages.spec.ts:pages.uml"
+implementation:
+  - frontend/src/app/uml.ts
+  - frontend/src/app/uml.component.html
+  - frontend/src/app/uml-diagram.component.ts
 scope:
   - frontend
 ---

@@ -18,7 +18,7 @@ specs/
       specs/       detail, list
       uml/         links, views
     non-functional/
-      accessibility/  language
+      accessibility/  conformance, interaction, language, perception, statement
       compatibility/  deploy
       performance/    loading
       privacy/        personal-data
@@ -63,7 +63,29 @@ specs/
 | [F/uml/views/000095](requirements/functional/uml/views/000095_uml-page.md) | The page UML shows the views of specs/uml | approved |
 | [F/uml/views/000096](requirements/functional/uml/views/000096_uml-drawing.md) | A view is drawn as a diagram with the colours of the kit | approved |
 | [F/uml/views/000097](requirements/functional/uml/views/000097_uml-text-alternative.md) | Each view has a list with the same content | approved |
+| [NF/accessibility/conformance/000073](requirements/non-functional/accessibility/conformance/000073_wcag-22-aa.md) | Every view meets WCAG 2.2 level AA | approved |
+| [NF/accessibility/conformance/000074](requirements/non-functional/accessibility/conformance/000074_axe-every-route.md) | Every route passes an axe check in both themes | approved |
+| [NF/accessibility/conformance/000075](requirements/non-functional/accessibility/conformance/000075_template-lint.md) | The template lint has the accessibility rules | approved |
+| [NF/accessibility/conformance/000076](requirements/non-functional/accessibility/conformance/000076_axe-unit-per-component.md) | Every component has a jest-axe test | approved |
+| [NF/accessibility/interaction/000084](requirements/non-functional/accessibility/interaction/000084_focus-ring.md) | The focus ring is 2 px and has a contrast of 3:1 | approved |
+| [NF/accessibility/interaction/000085](requirements/non-functional/accessibility/interaction/000085_focus-not-hidden.md) | Sticky bars do not hide the focus | approved |
+| [NF/accessibility/interaction/000086](requirements/non-functional/accessibility/interaction/000086_skip-link.md) | A skip link goes to the main content | approved |
+| [NF/accessibility/interaction/000087](requirements/non-functional/accessibility/interaction/000087_page-title.md) | Each page has its own title | approved |
+| [NF/accessibility/interaction/000088](requirements/non-functional/accessibility/interaction/000088_focus-after-navigation.md) | Focus goes to the heading after navigation | approved |
+| [NF/accessibility/interaction/000089](requirements/non-functional/accessibility/interaction/000089_dialog-focus.md) | A dialog keeps the focus inside | approved |
+| [NF/accessibility/interaction/000090](requirements/non-functional/accessibility/interaction/000090_target-size.md) | A target is at least 24 by 24 px | approved |
+| [NF/accessibility/interaction/000091](requirements/non-functional/accessibility/interaction/000091_status-announced.md) | A status message is announced | approved |
+| [NF/accessibility/interaction/000092](requirements/non-functional/accessibility/interaction/000092_landmarks-headings.md) | Each page has landmarks and one h1 | approved |
 | [NF/accessibility/language/000039](requirements/non-functional/accessibility/language/000039_de-en.md) | The UI is German and English | approved |
+| [NF/accessibility/language/000093](requirements/non-functional/accessibility/language/000093_page-language.md) | The page language follows the UI language | approved |
+| [NF/accessibility/language/000094](requirements/non-functional/accessibility/language/000094_content-language.md) | Spec text has its own lang | approved |
+| [NF/accessibility/perception/000079](requirements/non-functional/accessibility/perception/000079_text-contrast.md) | Text has a contrast of 4.5:1 | approved |
+| [NF/accessibility/perception/000080](requirements/non-functional/accessibility/perception/000080_non-text-contrast.md) | Control edges and icons have a contrast of 3:1 | approved |
+| [NF/accessibility/perception/000081](requirements/non-functional/accessibility/perception/000081_colour-not-alone.md) | Colour is not the only sign of a state | approved |
+| [NF/accessibility/perception/000082](requirements/non-functional/accessibility/perception/000082_reflow-320.md) | Every view works at a width of 320 px | approved |
+| [NF/accessibility/perception/000083](requirements/non-functional/accessibility/perception/000083_text-spacing.md) | User text spacing does not cut text | approved |
+| [NF/accessibility/statement/000077](requirements/non-functional/accessibility/statement/000077_statement-link.md) | Every page links to the accessibility statement | approved |
+| [NF/accessibility/statement/000078](requirements/non-functional/accessibility/statement/000078_barrier-report.md) | Every page links to the barrier report | approved |
 | [NF/compatibility/deploy/000035](requirements/non-functional/compatibility/deploy/000035_host-name.md) | The explorer runs at specs.workflow.reutlingen.university | approved |
 | [NF/compatibility/deploy/000036](requirements/non-functional/compatibility/deploy/000036_one-container.md) | The explorer is one container | approved |
 | [NF/performance/loading/000032](requirements/non-functional/performance/loading/000032_tarball-index.md) | One commit is loaded once | approved |

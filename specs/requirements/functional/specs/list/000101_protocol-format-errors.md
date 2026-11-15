@@ -2,7 +2,7 @@
 id: "000101"
 title: A protocol spec shows its format errors
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-15
 tests:

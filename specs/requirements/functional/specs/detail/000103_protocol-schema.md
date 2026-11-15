@@ -2,7 +2,7 @@
 id: "000103"
 title: The detail shows the schema as a field table and as raw JSON
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-15
 tests:

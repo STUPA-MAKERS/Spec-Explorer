@@ -2,7 +2,7 @@
 id: "000104"
 title: The detail lists the protocols of a rule and the rules of a protocol
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-15
 tests:

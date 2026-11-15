@@ -2,7 +2,7 @@
 id: "000102"
 title: The detail of a protocol spec shows version and media type
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-15
 tests:

@@ -2,7 +2,7 @@
 id: "000100"
 title: The list shows the protocol specs
 kind: functional
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-15
 tests:

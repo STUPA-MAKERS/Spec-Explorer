@@ -11,6 +11,12 @@
         <app-status-text [kind]="statusKind()">{{ t('status.' + status()) }}</app-status-text>
         <span class="sd__dot" aria-hidden="true">·</span><span class="mono">{{ s.id }}</span>
         <span class="sd__dot" aria-hidden="true">·</span><span>{{ t('kind.' + s.kind) }}</span>
+        @if (s.version) {
+          <span class="sd__dot" aria-hidden="true">·</span><span class="mono">v{{ s.version }}</span>
+        }
+        @if (s.mediaType) {
+          <span class="sd__dot" aria-hidden="true">·</span><span class="mono">{{ s.mediaType }}</span>
+        }
         <span class="sd__dot" aria-hidden="true">·</span><span>{{ s.owner }}</span>
         <span class="sd__dot" aria-hidden="true">·</span><span>{{ updated() }}</span>
       </p>
@@ -40,6 +46,20 @@
             [mailto]="false"
           />
         </app-section>
+        @if (s.schema != null) {
+          <app-section class="sd__sec" [heading]="t('schema')">
+            <a class="sd__link mono" [href]="data.blob(s.schemaFile ?? s.file)" target="_blank" rel="noopener">{{
+              base(s.schemaFile ?? '')
+            }}</a>
+            <div class="sd__table">
+              <app-table [columns]="fieldColumns()" [rows]="fields()" [emptyText]="t('schemaEmpty')" />
+            </div>
+            <details class="sd__raw">
+              <summary>{{ t('schemaRaw') }}</summary>
+              <app-markdown-view [src]="rawSchema()" [imageSrc]="null" [mailto]="false" />
+            </details>
+          </app-section>
+        }
       </div>
 
       <div class="sd__col">

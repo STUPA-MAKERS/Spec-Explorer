@@ -46,6 +46,15 @@ export interface Spec {
   mentions: string[];
   mentionedBy: string[];
   replaces: string[];
+  /** §F/specs/detail/000102: `version` and `media_type` of a protocol spec, else null. */
+  version: string | null;
+  mediaType: string | null;
+  /** §F/specs/detail/000103: the parsed schema file of a protocol spec, else null. */
+  schema: unknown;
+  schemaFile: string | null;
+  /** §F/references/specs/000104: the protocol specs of `protocols`, and the reverse. */
+  protocols: string[];
+  usedBy: string[];
 }
 
 export interface SourceIndex {
@@ -70,7 +79,7 @@ export interface RefRow extends CodeRef {
   ok: boolean;
 }
 
-export const KINDS = ['functional', 'non-functional', 'style'] as const;
+export const KINDS = ['functional', 'non-functional', 'style', 'protocol'] as const;
 export const STATUSES = ['approved', 'draft', 'replaced', 'removed', 'error'] as const;
 export const ORG = 'STUPA-MAKERS';
 export const DEFAULT_REPO = 'STUPA-Workflow';
@@ -78,7 +87,7 @@ export const DEFAULT_REPO = 'STUPA-Workflow';
 /** §F/sources/refs/000005: a commit SHA has 7 to 40 hexadecimal characters. */
 export const SHA_RE = /^[0-9a-fA-F]{7,40}$/;
 /** The form of a rule ID. */
-export const RULE_ID_RE = /^(F|NF|S)(\/[a-z0-9-]+)+\/[0-9]{6}$/;
+export const RULE_ID_RE = /^(F|NF|S|P)(\/[a-z0-9-]+)+\/[0-9]{6}$/;
 
 /** §F/specs/list/000014: a spec with a format violation has the status `error`. */
 export function statusOf(spec: Spec): string {
@@ -196,4 +205,71 @@ export function blobUrl(repo: string, sha: string, path: string, line?: number |
     .join('/');
   const kind = file ? 'blob' : 'tree';
   return `https://github.com/${ORG}/${encodeURIComponent(repo)}/${kind}/${sha}/${file}${line ? `#L${line}` : ''}`;
+}
+
+/** One row of the field table of a schema. */
+export interface SchemaField {
+  path: string;
+  type: string;
+  required: boolean;
+  description: string;
+}
+
+type SchemaNode = Record<string, unknown>;
+
+function isNode(v: unknown): v is SchemaNode {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+function typeOf(node: SchemaNode): string {
+  const t = node['type'];
+  const base = Array.isArray(t) ? t.join(' | ') : typeof t === 'string' ? t : '';
+  const values = node['enum'];
+  if (Array.isArray(values)) return values.map((v) => JSON.stringify(v)).join(' | ');
+  if ('const' in node) return JSON.stringify(node['const']);
+  const format = node['format'];
+  return typeof format === 'string' ? `${base || 'string'} (${format})` : base;
+}
+
+/**
+ * §F/specs/detail/000103: one row for each field of a JSON Schema. A nested field has the path
+ * of its parent, a `.` and its name; an array item has `[]` after the path of the array.
+ */
+export function schemaFields(schema: unknown): SchemaField[] {
+  const rows: SchemaField[] = [];
+  const walk = (node: unknown, path: string): void => {
+    if (!isNode(node)) return;
+    const props = node['properties'];
+    if (isNode(props)) {
+      const req = Array.isArray(node['required']) ? (node['required'] as unknown[]) : [];
+      for (const [name, child] of Object.entries(props)) {
+        if (!isNode(child)) continue;
+        const p = path ? `${path}.${name}` : name;
+        const description = child['description'];
+        rows.push({
+          path: p,
+          type: typeOf(child),
+          required: req.includes(name),
+          description: typeof description === 'string' ? description : '',
+        });
+        walk(child, p);
+      }
+    }
+    const items = node['items'];
+    if (isNode(items)) {
+      const p = `${path}[]`;
+      if (!isNode(items['properties'])) {
+        const description = items['description'];
+        rows.push({
+          path: p,
+          type: typeOf(items),
+          required: false,
+          description: typeof description === 'string' ? description : '',
+        });
+      }
+      walk(items, p);
+    }
+  };
+  walk(schema, '');
+  return rows;
 }

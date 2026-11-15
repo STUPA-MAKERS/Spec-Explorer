@@ -33,6 +33,12 @@ function spec(extra: Partial<Spec> = {}): Spec {
     mentions: [],
     mentionedBy: [],
     replaces: [],
+    version: null,
+    mediaType: null,
+    schema: null,
+    schemaFile: null,
+    protocols: [],
+    usedBy: [],
     ...extra,
   };
 }
@@ -59,6 +65,22 @@ async function show(s: Spec): Promise<void> {
 }
 
 describe('SpecDetailComponent', () => {
+  it('protocolHead: shows version, media type and the schema table (§F/specs/detail/000102)', async () => {
+    await show(
+      spec({
+        id: 'P/integrations/webhooks/000963',
+        kind: 'protocol',
+        version: '1',
+        mediaType: 'application/json',
+        schemaFile: 'specs/protocols/integrations/webhooks/000963_webhook-delivery.schema.json',
+        schema: { type: 'object', required: ['event'], properties: { event: { type: 'string', description: 'The event.' } } },
+      }),
+    );
+    for (const text of ['Schnittstelle', 'v1', 'application/json', 'event', 'The event.', 'Schema als JSON']) {
+      expect(screen.getAllByText(text).length).toBeGreaterThan(0);
+    }
+  });
+
   it('frontMatter: shows rule ID, title, kind, status, owner and date (§F/specs/detail/000015)', async () => {
     await show(spec());
     expect(screen.getByRole('heading', { name: 'A commit SHA has 7 to 40 characters' })).toBeTruthy();

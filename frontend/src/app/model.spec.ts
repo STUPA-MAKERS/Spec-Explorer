@@ -5,6 +5,7 @@ import {
   filterSpecs,
   groupSpecs,
   refRows,
+  schemaFields,
   statusOf,
   type CodeRef,
   type SourceIndex,
@@ -32,6 +33,12 @@ function spec(id: string, title: string, extra: Partial<Spec> = {}): Spec {
     mentions: [],
     mentionedBy: [],
     replaces: [],
+    version: null,
+    mediaType: null,
+    schema: null,
+    schemaFile: null,
+    protocols: [],
+    usedBy: [],
     ...extra,
   };
 }
@@ -138,5 +145,32 @@ describe('blobUrl', () => {
       'https://github.com/STUPA-MAKERS/ui-kit/blob/abc/specs/x.md',
     );
     expect(blobUrl('ui-kit', 'abc', '.')).toBe('https://github.com/STUPA-MAKERS/ui-kit/tree/abc/');
+  });
+});
+
+describe('schemaFields', () => {
+  it('fieldTable: one row per field, nested paths with . and [] (§F/specs/detail/000103)', () => {
+    const schema = {
+      type: 'object',
+      required: ['event', 'items'],
+      properties: {
+        event: { type: 'string', enum: ['a.b'], description: 'The event.' },
+        id: { type: 'string', format: 'uuid' },
+        items: {
+          type: 'array',
+          items: { type: 'object', required: ['n'], properties: { n: { type: 'integer' } } },
+        },
+        tags: { type: 'array', items: { type: 'string' } },
+      },
+    };
+    expect(schemaFields(schema)).toEqual([
+      { path: 'event', type: '"a.b"', required: true, description: 'The event.' },
+      { path: 'id', type: 'string (uuid)', required: false, description: '' },
+      { path: 'items', type: 'array', required: true, description: '' },
+      { path: 'items[].n', type: 'integer', required: true, description: '' },
+      { path: 'tags', type: 'array', required: false, description: '' },
+      { path: 'tags[]', type: 'string', required: false, description: '' },
+    ]);
+    expect(schemaFields(null)).toEqual([]);
   });
 });

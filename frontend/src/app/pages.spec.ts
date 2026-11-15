@@ -33,6 +33,12 @@ function spec(id: string, title: string, extra: Partial<Spec> = {}): Spec {
     mentions: [],
     mentionedBy: [],
     replaces: [],
+    version: null,
+    mediaType: null,
+    schema: null,
+    schemaFile: null,
+    protocols: [],
+    usedBy: [],
     ...extra,
   };
 }

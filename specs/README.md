@@ -40,6 +40,7 @@ specs/
 | [F/references/paths/000024](requirements/functional/references/paths/000024_tests.md) | The detail lists the tests | approved |
 | [F/references/paths/000025](requirements/functional/references/paths/000025_scope-paths.md) | The detail lists the scope paths | approved |
 | [F/references/specs/000026](requirements/functional/references/specs/000026_spec-mentions.md) | The detail lists the specs that name each other | approved |
+| [F/references/specs/000104](requirements/functional/references/specs/000104_protocol-links.md) | The detail lists the protocols of a rule and the rules of a protocol | approved |
 | [F/sources/refs/000004](requirements/functional/sources/refs/000004_ref-kinds.md) | A source is a repository and a ref | approved |
 | [F/sources/refs/000005](requirements/functional/sources/refs/000005_commit-sha.md) | A commit SHA has 7 to 40 hex characters | approved |
 | [F/sources/refs/000006](requirements/functional/sources/refs/000006_resolved-commit.md) | The page shows the commit of the source | approved |
@@ -53,11 +54,15 @@ specs/
 | [F/specs/detail/000016](requirements/functional/specs/detail/000016_body.md) | The detail renders the rule text | approved |
 | [F/specs/detail/000017](requirements/functional/specs/detail/000017_file-link.md) | The detail links to the spec file | approved |
 | [F/specs/detail/000018](requirements/functional/specs/detail/000018_replaced-by.md) | A replaced spec links to its successor | approved |
+| [F/specs/detail/000102](requirements/functional/specs/detail/000102_protocol-head.md) | The detail of a protocol spec shows version and media type | approved |
+| [F/specs/detail/000103](requirements/functional/specs/detail/000103_protocol-schema.md) | The detail shows the schema as a field table and as raw JSON | approved |
 | [F/specs/list/000010](requirements/functional/specs/list/000010_every-spec-file.md) | The list shows every spec file | approved |
 | [F/specs/list/000011](requirements/functional/specs/list/000011_tree-groups.md) | The list groups by kind, area and topic | approved |
 | [F/specs/list/000012](requirements/functional/specs/list/000012_search.md) | The search finds number, rule ID and title | approved |
 | [F/specs/list/000013](requirements/functional/specs/list/000013_filters.md) | The list filters by status and kind | approved |
 | [F/specs/list/000014](requirements/functional/specs/list/000014_format-error.md) | A file with a format error stays in the list | approved |
+| [F/specs/list/000100](requirements/functional/specs/list/000100_protocol-specs.md) | The list shows the protocol specs | approved |
+| [F/specs/list/000101](requirements/functional/specs/list/000101_protocol-format-errors.md) | A protocol spec shows its format errors | approved |
 | [F/uml/links/000098](requirements/functional/uml/links/000098_uml-element-detail.md) | An element opens a detail with its path and its specs | approved |
 | [F/uml/links/000099](requirements/functional/uml/links/000099_spec-uml-elements.md) | The detail of a spec lists its UML elements | approved |
 | [F/uml/views/000095](requirements/functional/uml/views/000095_uml-page.md) | The page UML shows the views of specs/uml | approved |

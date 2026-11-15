@@ -15,3 +15,5 @@
 .sd__none { margin: 0; color: var(--color-text-muted); }
 .sd__row { --li-gap: var(--space-3); }
 .sd__path ::ng-deep .li__titleText { font-family: var(--font-mono); font-size: var(--fs-small); }
+.sd__table { overflow-x: auto; }
+.sd__raw summary { cursor: pointer; padding-block: var(--space-2); color: var(--color-accent-text); font-weight: var(--fw-semibold); }

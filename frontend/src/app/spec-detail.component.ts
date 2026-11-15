@@ -10,19 +10,29 @@ import {
   SheetBarComponent,
   SheetBarTitleDirective,
   StatusTextComponent,
+  TableComponent,
+  type Column,
   type StatusKind,
 } from '@stupa-makers/ui-kit';
 import { MarkdownViewComponent } from '@stupa-makers/ui-kit/markdown-view';
 import { DataService } from './data.service';
 import { ExplorerComponent, STATUS_KIND } from './explorer.component';
 import { I18n } from './i18n';
-import { statusOf, type Spec } from './model';
+import { schemaFields, statusOf, type Spec } from './model';
 import { elementsForSpec, viewLabel } from './uml';
 
 /**
  * The detail of one spec: the front matter, the rule text and every reference.
- * §F/specs/detail/000015, §F/specs/detail/000016, §F/specs/detail/000017
+ * §F/specs/detail/000015, §F/specs/detail/000016, §F/specs/detail/000017,
+ * §F/specs/detail/000102, §F/specs/detail/000103
  */
+interface FieldRow extends Record<string, unknown> {
+  path: string;
+  type: string;
+  required: string;
+  description: string;
+}
+
 @Component({
   selector: 'app-spec-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +47,7 @@ import { elementsForSpec, viewLabel } from './uml';
     SheetBarComponent,
     SheetBarTitleDirective,
     StatusTextComponent,
+    TableComponent,
     MarkdownViewComponent,
   ],
   templateUrl: './spec-detail.component.html',
@@ -85,7 +96,30 @@ export class SpecDetailComponent {
       ...get('replaces', s.replaces),
       ...get('mentions', s.mentions),
       ...get('mentionedBy', s.mentionedBy),
+      // §F/references/specs/000104: the protocols of a rule and the rules of a protocol.
+      ...get('protocols', s.protocols),
+      ...get('usedBy', s.usedBy),
     ];
+  });
+  /** §F/specs/detail/000103: the field table of the schema of a protocol spec. */
+  readonly fields = computed(() =>
+    schemaFields(this.spec()?.schema).map((f) => ({
+      path: f.path,
+      type: f.type,
+      required: this.t(f.required ? 'yes' : 'no'),
+      description: f.description,
+    })),
+  );
+  readonly fieldColumns = computed<Column<FieldRow>[]>(() => [
+    { key: 'path', label: this.t('schemaField') },
+    { key: 'type', label: this.t('schemaType') },
+    { key: 'required', label: this.t('schemaRequired') },
+    { key: 'description', label: this.t('schemaDescription') },
+  ]);
+  /** The raw schema as a fenced JSON block for the Markdown view. */
+  readonly rawSchema = computed(() => {
+    const schema = this.spec()?.schema;
+    return schema == null ? '' : '```json\n' + JSON.stringify(schema, null, 2) + '\n```';
   });
 
   base(p: string): string {

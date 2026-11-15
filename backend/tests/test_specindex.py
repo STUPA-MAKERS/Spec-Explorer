@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from app.specindex import MAX_SCAN_BYTES, build_index, rule_text
@@ -204,3 +205,96 @@ def test_rule_text() -> None:
     """The body loses its heading; a list keeps its line breaks."""
     assert rule_text("# T\n\nA\nB\n\n- x\n- y") == "A B\n\n- x\n- y"
     assert rule_text("# T") == ""
+
+
+PROTOCOL_BODY = """The platform must send it.
+
+## Transport
+
+| Part | Value |
+| --- | --- |
+| Medium | HTTPS |
+
+## Schema
+
+The body must match the schema file.
+
+## Example
+
+```json
+{"a": "b"}
+```
+
+## Compatibility
+
+A receiver must ignore an unknown key."""
+
+PROTOCOL_EXTRA = "version: 1\nmedia_type: application/json\nimplementation: null\n"
+PROTOCOL_PATH = "specs/protocols/area/topic/000010_format.md"
+SCHEMA = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": ["a"],
+    "properties": {"a": {"type": "string", "description": "The a."}},
+}
+
+
+def _with_protocol(tree: dict[str, bytes]) -> dict[str, bytes]:
+    tree[PROTOCOL_PATH] = spec(
+        "000010", "A format", kind="protocol", extra=PROTOCOL_EXTRA, body=PROTOCOL_BODY
+    )
+    tree["specs/protocols/area/topic/000010_format.schema.json"] = json.dumps(SCHEMA).encode()
+    return tree
+
+
+def test_protocol_specs(tree: dict[str, bytes]) -> None:
+    """§F/specs/list/000100: a file below specs/protocols is a P spec of kind protocol."""
+    specs = _by_id(build_index(_with_protocol(tree)))
+    p = specs["P/area/topic/000010"]
+    assert p["kind"] == "protocol"
+    assert p["errors"] == []
+    assert p["version"] == "1"
+    assert p["mediaType"] == "application/json"
+
+
+def test_protocol_format_errors(tree: dict[str, bytes]) -> None:
+    """§F/specs/list/000101: missing keys, sections, schema file and protocols entries."""
+    tree[PROTOCOL_PATH] = spec("000010", "A format", kind="protocol", body="It must be.")
+    tree["specs/requirements/functional/area/topic/000011_uses.md"] = spec(
+        "000011", extra='protocols:\n  - "P/area/topic/000099"\nimplementation: null\n'
+    )
+    specs = _by_id(build_index(tree))
+    errors = specs["P/area/topic/000010"]["errors"]
+    assert "a protocol spec must have version" in errors
+    assert "a protocol spec must have media_type" in errors
+    assert any(e.startswith("the body must have the # title, then ## Transport") for e in errors)
+    tree[PROTOCOL_PATH] = spec(
+        "000010", "A format", kind="protocol", extra=PROTOCOL_EXTRA, body=PROTOCOL_BODY
+    )
+    specs = _by_id(build_index(tree))
+    assert specs["P/area/topic/000010"]["errors"] == [
+        "the schema file 000010_format.schema.json is missing"
+    ]
+    assert specs["F/area/topic/000011"]["errors"] == [
+        "protocols entry 'P/area/topic/000099' names no protocol spec"
+    ]
+
+
+def test_protocol_schema(tree: dict[str, bytes]) -> None:
+    """§F/specs/detail/000103: the index carries the parsed schema and its file."""
+    p = _by_id(build_index(_with_protocol(tree)))["P/area/topic/000010"]
+    assert p["schema"] == SCHEMA
+    assert p["schemaFile"] == "specs/protocols/area/topic/000010_format.schema.json"
+    assert _by_id(build_index(tree))["F/area/topic/000001"]["schema"] is None
+
+
+def test_protocol_links(tree: dict[str, bytes]) -> None:
+    """§F/references/specs/000104: protocols of a rule and the rules that use a protocol."""
+    _with_protocol(tree)
+    tree["specs/requirements/functional/area/topic/000011_uses.md"] = spec(
+        "000011", extra='protocols:\n  - "P/area/topic/000010"\nimplementation: null\n'
+    )
+    specs = _by_id(build_index(tree))
+    assert specs["F/area/topic/000011"]["protocols"] == ["P/area/topic/000010"]
+    assert specs["F/area/topic/000011"]["errors"] == []
+    assert specs["P/area/topic/000010"]["usedBy"] == ["F/area/topic/000011"]

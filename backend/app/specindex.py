@@ -7,6 +7,7 @@ as `scripts/check_specs.py`, so the explorer and the format check report the sam
 
 from __future__ import annotations
 
+import json
 import re
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
@@ -16,14 +17,16 @@ from typing import Any
 from app.umlindex import build_uml
 
 # §F/references/code/000019: the pattern of the format check.
-SECTION_REF = re.compile(r"§ ?((?:F|NF|S)/[a-z0-9/-]+/[0-9]{6})")
+SECTION_REF = re.compile(r"§ ?((?:F|NF|S|P)/[a-z0-9/-]+/[0-9]{6})")
 # §F/references/specs/000026: a rule ID in the body of a spec, without `§`.
-MENTION = re.compile(r"(?<![§/\w])((?:F|NF|S)/[a-z0-9-]+/[a-z0-9-]+/[0-9]{6})")
+MENTION = re.compile(r"(?<![§/\w])((?:F|NF|S|P)/[a-z0-9-]+/[a-z0-9-]+/[0-9]{6})")
 
 KINDS = {
     "specs/style": ("S", "style"),
     "specs/requirements/functional": ("F", "functional"),
     "specs/requirements/non-functional": ("NF", "non-functional"),
+    # §F/specs/list/000100: the protocol specs, one data exchange format each.
+    "specs/protocols": ("P", "protocol"),
 }
 KEYS = [
     "id",
@@ -33,7 +36,10 @@ KEYS = [
     "owner",
     "updated",
     "replaced_by",
+    "version",
+    "media_type",
     "tests",
+    "protocols",
     "implementation",
     "scope",
 ]
@@ -41,11 +47,14 @@ REQUIRED = {"id", "title", "kind", "status", "owner", "updated", "scope"}
 STATUSES = {"draft", "approved", "replaced", "removed"}
 FILE_NAME = re.compile(r"^[0-9]{6}_[a-z0-9]+(-[a-z0-9]+)*\.md$")
 FOLDER = re.compile(r"^[a-z0-9-]+$")
-FULL_ID = re.compile(r"^(F|NF|S)(/[a-z0-9-]+)+/[0-9]{6}$")
+FULL_ID = re.compile(r"^(F|NF|S|P)(/[a-z0-9-]+)+/[0-9]{6}$")
 TEST_ENTRY = re.compile(r"^[^:\s]+\.(py|ts):[A-Za-z_][A-Za-z0-9_.]*$")
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 LABEL = re.compile(r"^(Reason|Test):", re.MULTILINE)
 MUST = re.compile(r"\bmust\b")
+VERSION = re.compile(r"^[1-9][0-9]*$")
+MEDIA_TYPE = re.compile(r"^[a-z]+/[a-z0-9.+-]+$")
+PROTOCOL_SECTIONS = ["## Transport", "## Schema", "## Example", "## Compatibility"]
 LIST_LINE = re.compile(r"\s*([-*|>]|\d+\.|```)")
 
 # §NF/performance/loading/000034: no reference search in a file larger than 1 MB.
@@ -221,6 +230,7 @@ def _check_meta(spec: _Parsed, ids: Mapping[str, _Parsed], files: Files) -> list
             ]
     elif implementation is not None:
         errors.append("implementation goes with status draft or approved only")
+    errors += _check_protocol_meta(spec, ids, files)
     scope = meta.get("scope")
     if not isinstance(scope, list) or not scope:
         errors.append("scope must be a list of paths")
@@ -231,13 +241,60 @@ def _check_meta(spec: _Parsed, ids: Mapping[str, _Parsed], files: Files) -> list
     return errors
 
 
+def is_json_media(media_type: object) -> bool:
+    """Return True for `application/json` and every `+json` media type."""
+    return media_type == "application/json" or str(media_type).endswith("+json")
+
+
+def schema_path(path: str) -> str:
+    """Return the path of the schema file beside a protocol spec."""
+    return path[: -len(".md")] + ".schema.json"
+
+
+def _check_protocol_meta(spec: _Parsed, ids: Mapping[str, _Parsed], files: Files) -> list[str]:
+    """§F/specs/list/000101: the keys of a protocol spec and the `protocols` of a rule."""
+    errors: list[str] = []
+    meta = spec.meta
+    is_protocol = spec.full_id.startswith("P/")
+    for key in ("version", "media_type"):
+        if is_protocol and key not in meta:
+            errors.append(f"a protocol spec must have {key}")
+        if not is_protocol and key in meta:
+            errors.append(f"{key} goes with kind protocol only")
+    if is_protocol:
+        if "version" in meta and not VERSION.match(str(meta["version"])):
+            errors.append("version must be a whole number from 1")
+        if "media_type" in meta and not MEDIA_TYPE.match(str(meta["media_type"])):
+            errors.append(f"media_type {meta['media_type']!r} is no media type")
+        if is_json_media(meta.get("media_type")) and schema_path(spec.path) not in files.paths:
+            errors.append(
+                f"the schema file {PurePosixPath(schema_path(spec.path)).name} is missing"
+            )
+    protocols = meta.get("protocols")
+    if protocols is None:
+        return errors
+    if not spec.full_id.startswith(("F/", "NF/")):
+        errors.append("protocols goes with an F or NF spec only")
+    for entry in _as_list(protocols):
+        target = ids.get(entry)
+        if not entry.startswith("P/") or target is None:
+            errors.append(f"protocols entry {entry!r} names no protocol spec")
+        elif target.meta.get("status") in ("replaced", "removed"):
+            errors.append(f"protocols entry {entry!r} is not in force")
+    return errors
+
+
 def _check_body(spec: _Parsed) -> list[str]:
     """Return the violations of the heading, the labels and `must` of one spec."""
     if not spec.keys:
         return []
     errors: list[str] = []
     headings = [line for line in spec.body.splitlines() if line.startswith("#")]
-    if headings != [f"# {spec.meta.get('title')}"]:
+    title = f"# {spec.meta.get('title')}"
+    if spec.full_id.startswith("P/"):
+        if headings != [title, *PROTOCOL_SECTIONS]:
+            errors.append(f"the body must have the # title, then {', '.join(PROTOCOL_SECTIONS)}")
+    elif headings != [title]:
         errors.append("the body must have one # heading equal to the title")
     labels = LABEL.findall(spec.body)
     if labels not in ([], ["Reason"], ["Test"], ["Reason", "Test"]):
@@ -316,6 +373,18 @@ def _paths(values: list[str], files: Files) -> list[dict[str, Any]]:
     return [{"path": p, "exists": files.exists(p)} for p in values]
 
 
+def _schema(spec: _Parsed, tree: Tree) -> object:
+    """§F/specs/detail/000103: the parsed schema file of a protocol spec, or None."""
+    data = tree.get(schema_path(spec.path)) if spec.full_id.startswith("P/") else None
+    if data is None:
+        return None
+    try:
+        return json.loads(data)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        spec.errors.append(f"{PurePosixPath(schema_path(spec.path)).name} is no JSON")
+        return None
+
+
 def build_index(tree: Tree) -> dict[str, Any]:
     """Return the index of one commit: every spec and every reference that names no spec."""
     texts = {
@@ -348,6 +417,7 @@ def build_index(tree: Tree) -> dict[str, Any]:
         meta = spec.meta
         implementation = meta.get("implementation")
         replaced_by = meta.get("replaced_by")
+        schema = _schema(spec, tree)
         specs.append(
             {
                 "id": spec.full_id,
@@ -359,6 +429,13 @@ def build_index(tree: Tree) -> dict[str, Any]:
                 "owner": str(meta.get("owner") or ""),
                 "updated": str(meta.get("updated") or ""),
                 "replacedBy": replaced_by if isinstance(replaced_by, str) else None,
+                "version": str(meta["version"]) if isinstance(meta.get("version"), str) else None,
+                "mediaType": (
+                    str(meta["media_type"]) if isinstance(meta.get("media_type"), str) else None
+                ),
+                "schema": schema,
+                "schemaFile": schema_path(spec.path) if schema is not None else None,
+                "protocols": _as_list(meta.get("protocols")),
                 "tests": [_test_ref(t, files) for t in _as_list(meta.get("tests"))],
                 "implementation": (
                     _paths(implementation, files) if isinstance(implementation, list) else None
@@ -373,4 +450,6 @@ def build_index(tree: Tree) -> dict[str, Any]:
     for spec in specs:
         spec["mentionedBy"] = sorted(s["id"] for s in specs if spec["id"] in s["mentions"])
         spec["replaces"] = sorted(s["id"] for s in specs if s["replacedBy"] == spec["id"])
+        # §F/references/specs/000104: the rules that name this protocol in `protocols`.
+        spec["usedBy"] = sorted(s["id"] for s in specs if spec["id"] in s["protocols"])
     return {"specs": specs, "broken": broken, "uml": build_uml(tree)}

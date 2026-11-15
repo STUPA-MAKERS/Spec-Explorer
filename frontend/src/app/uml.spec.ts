@@ -34,6 +34,12 @@ function spec(id: string, implementation: string[] | null): Spec {
     mentions: [],
     mentionedBy: [],
     replaces: [],
+    version: null,
+    mediaType: null,
+    schema: null,
+    schemaFile: null,
+    protocols: [],
+    usedBy: [],
   };
 }
 

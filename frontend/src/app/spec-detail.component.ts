@@ -84,6 +84,15 @@ export class SpecDetailComponent {
       link: ['/', this.data.repo(), this.data.ref(), 'uml', h.view.key, h.element.id],
     }));
   });
+  /** §F/references/specs/000105: the specs of other repositories that the body names. */
+  readonly externalLinks = computed(() =>
+    (this.spec()?.external ?? []).map((x) => ({
+      key: `${x.repo}:${x.id}`,
+      repo: x.repo,
+      id: x.id,
+      link: this.data.externalLink(x.repo, x.id),
+    })),
+  );
   readonly linked = computed(() => {
     const s = this.spec();
     if (!s) return [];

@@ -5,6 +5,7 @@ import {
   filterSpecs,
   groupSpecs,
   refRows,
+  externalRef,
   schemaFields,
   statusOf,
   type CodeRef,
@@ -172,5 +173,15 @@ describe('schemaFields', () => {
       { path: 'tags[]', type: 'string', required: false, description: '' },
     ]);
     expect(schemaFields(null)).toEqual([]);
+  });
+});
+
+describe('externalRef §F/references/specs/000105', () => {
+  const other = { repo: 'ui-kit', defaultBranch: 'main', branches: ['main', 'development'], tags: ['v1'] };
+  it('keeps a branch or tag that the other repository has, else takes its default branch', () => {
+    expect(externalRef('development', other)).toBe('development');
+    expect(externalRef('v1', other)).toBe('v1');
+    expect(externalRef('v2026.11.29', other)).toBe('main');
+    expect(externalRef('development', undefined)).toBe('development');
   });
 });

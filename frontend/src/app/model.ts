@@ -20,6 +20,8 @@ export interface TestRef {
 
 export interface CodeRef {
   ref: string;
+  /** §F/references/specs/000105: the repository of a reference with a repository name. */
+  repo?: string | null;
   path: string;
   line: number;
   text: string;
@@ -44,6 +46,8 @@ export interface Spec {
   errors: string[];
   codeRefs: CodeRef[];
   mentions: string[];
+  /** §F/references/specs/000105: the rule IDs of other repositories that the body names. */
+  external?: ExternalId[];
   mentionedBy: string[];
   replaces: string[];
   /** §F/specs/detail/000102: `version` and `media_type` of a protocol spec, else null. */
@@ -63,8 +67,16 @@ export interface SourceIndex {
   sha: string;
   specs: Spec[];
   broken: CodeRef[];
+  /** §F/references/specs/000105: the references to a spec of another repository. */
+  external?: CodeRef[];
   /** §F/uml/views/000095: the views of `specs/uml/`; empty when the source has none. */
   uml: UmlView[];
+}
+
+/** A rule ID of another repository. */
+export interface ExternalId {
+  repo: string;
+  id: string;
 }
 
 export interface RepoRefs {
@@ -152,7 +164,8 @@ function cmp(a: string, b: string): number {
 export function refRows(index: SourceIndex | null): RefRow[] {
   if (!index) return [];
   const ok = index.specs.flatMap((s) => s.codeRefs.map((r) => ({ ...r, ok: true })));
-  return [...index.broken.map((r) => ({ ...r, ok: false })), ...ok];
+  const external = (index.external ?? []).map((r) => ({ ...r, ok: true }));
+  return [...index.broken.map((r) => ({ ...r, ok: false })), ...ok, ...external];
 }
 
 export interface RefFilter {
@@ -272,4 +285,13 @@ export function schemaFields(schema: unknown): SchemaField[] {
   };
   walk(schema, '');
   return rows;
+}
+
+/**
+ * §F/references/specs/000105: the ref to open in another repository: the same branch or tag
+ * when it has it, else its default branch. Without its refs yet, the same name.
+ */
+export function externalRef(ref: string, other: RepoRefs | undefined): string {
+  if (!other) return ref;
+  return other.branches.includes(ref) || other.tags.includes(ref) ? ref : other.defaultBranch;
 }

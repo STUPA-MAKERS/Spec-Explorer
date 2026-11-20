@@ -38,7 +38,7 @@ import { RefsComponent } from './refs.component';
       <article class="sd" [class.sd--split]="split()" aria-labelledby="rd-title">
         <header class="sheet-head">
           <app-sheet-bar [bleed]="split()">
-            <h2 appSheetBarTitle id="rd-title" class="sheet-title mono rd__title">{{ r.ref }}</h2>
+            <h2 appSheetBarTitle id="rd-title" class="sheet-title mono rd__title">{{ r.repo ? r.repo + ':' + r.ref : r.ref }}</h2>
             <app-button variant="text" [iconOnly]="true" [ariaLabel]="t('openLine')" (click)="open(r.path, r.line)">
               <app-icon name="ext" />
             </app-button>
@@ -59,6 +59,12 @@ import { RefsComponent } from './refs.component';
           <app-section class="sd__sec" [heading]="t('spec')">
             <div class="rowgroup">
               <app-list-item [title]="s.title" [sub]="s.id" [link]="data.specLink(s.id)" />
+            </div>
+          </app-section>
+        } @else if (r.repo) {
+          <app-section class="sd__sec" [heading]="t('spec')">
+            <div class="rowgroup">
+              <app-list-item [title]="r.ref" [sub]="r.repo" [link]="data.externalLink(r.repo, r.ref)" />
             </div>
           </app-section>
         }
@@ -90,7 +96,7 @@ export class RefDetailComponent {
   readonly ref = computed(() => this.data.refs()[Number(this.n())] ?? null);
   readonly spec = computed(() => {
     const r = this.ref();
-    return r?.ok ? (this.data.byId().get(r.ref) ?? null) : null;
+    return r?.ok && !r.repo ? (this.data.byId().get(r.ref) ?? null) : null;
   });
   readonly code = computed(() => {
     const r = this.ref();

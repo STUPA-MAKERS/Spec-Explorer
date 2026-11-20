@@ -41,6 +41,7 @@ specs/
 | [F/references/paths/000025](requirements/functional/references/paths/000025_scope-paths.md) | The detail lists the scope paths | approved |
 | [F/references/specs/000026](requirements/functional/references/specs/000026_spec-mentions.md) | The detail lists the specs that name each other | approved |
 | [F/references/specs/000104](requirements/functional/references/specs/000104_protocol-links.md) | The detail lists the protocols of a rule and the rules of a protocol | approved |
+| [F/references/specs/000105](requirements/functional/references/specs/000105_other-repository.md) | A reference with a repository name links to that repository | draft |
 | [F/sources/refs/000004](requirements/functional/sources/refs/000004_ref-kinds.md) | A source is a repository and a ref | approved |
 | [F/sources/refs/000005](requirements/functional/sources/refs/000005_commit-sha.md) | A commit SHA has 7 to 40 hex characters | approved |
 | [F/sources/refs/000006](requirements/functional/sources/refs/000006_resolved-commit.md) | The page shows the commit of the source | approved |

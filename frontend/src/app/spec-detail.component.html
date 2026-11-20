@@ -151,6 +151,16 @@
           </app-section>
         }
 
+        @if (externalLinks().length) {
+          <app-section class="sd__sec" [heading]="t('otherRepos')">
+            <div class="rowgroup">
+              @for (x of externalLinks(); track x.key) {
+                <app-list-item class="sd__row" [title]="x.id" [sub]="x.repo" [link]="x.link" />
+              }
+            </div>
+          </app-section>
+        }
+
         @if (umlHits().length) {
           <app-section class="sd__sec" [heading]="t('uml')">
             <div class="rowgroup">

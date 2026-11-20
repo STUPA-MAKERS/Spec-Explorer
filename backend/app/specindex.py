@@ -17,9 +17,11 @@ from typing import Any
 from app.umlindex import build_uml
 
 # §F/references/code/000019: the pattern of the format check.
-SECTION_REF = re.compile(r"§ ?((?:F|NF|S|P)/[a-z0-9/-]+/[0-9]{6})")
+SECTION_REF = re.compile(r"§ ?(?:([A-Za-z0-9-]+):)?((?:F|NF|S|P)/[a-z0-9/-]+/[0-9]{6})")
 # §F/references/specs/000026: a rule ID in the body of a spec, without `§`.
-MENTION = re.compile(r"(?<![§/\w])((?:F|NF|S|P)/[a-z0-9-]+/[a-z0-9-]+/[0-9]{6})")
+MENTION = re.compile(r"(?<![§/\w:])((?:F|NF|S|P)/[a-z0-9-]+/[a-z0-9-]+/[0-9]{6})")
+# §F/references/specs/000105: a rule ID of another repository, with its name and a colon.
+EXTERNAL = re.compile(r"(?<![/\w-])([A-Za-z0-9-]+):((?:F|NF|S|P)/[a-z0-9-]+/[a-z0-9-]+/[0-9]{6})")
 
 KINDS = {
     "specs/style": ("S", "style"),
@@ -340,7 +342,8 @@ def _code_refs(files: Files, tree: Tree) -> list[dict[str, Any]]:
                 start = max(1, number - CONTEXT_LINES)
                 refs.append(
                     {
-                        "ref": match.group(1),
+                        "ref": match.group(2),
+                        "repo": match.group(1),
                         "path": path,
                         "line": number,
                         "text": line.strip()[:200],
@@ -406,8 +409,12 @@ def build_index(tree: Tree) -> dict[str, Any]:
     refs = _code_refs(files, tree)
     by_spec: dict[str, list[dict[str, Any]]] = {}
     broken: list[dict[str, Any]] = []
+    external: list[dict[str, Any]] = []
     for ref in refs:
-        if ref["ref"] in ids:
+        # §F/references/specs/000105: a reference with a repository name names a spec there.
+        if ref["repo"] is not None:
+            external.append(ref)
+        elif ref["ref"] in ids:
             by_spec.setdefault(ref["ref"], []).append(ref)
         else:
             broken.append(ref)
@@ -445,6 +452,10 @@ def build_index(tree: Tree) -> dict[str, Any]:
                 "errors": spec.errors,
                 "codeRefs": by_spec.get(spec.full_id, []),
                 "mentions": sorted({m for m in MENTION.findall(spec.body) if m != spec.full_id}),
+                "external": [
+                    {"repo": repo, "id": rid}
+                    for repo, rid in sorted(set(EXTERNAL.findall(spec.body)))
+                ],
             }
         )
     for spec in specs:
@@ -452,4 +463,4 @@ def build_index(tree: Tree) -> dict[str, Any]:
         spec["replaces"] = sorted(s["id"] for s in specs if s["replacedBy"] == spec["id"])
         # §F/references/specs/000104: the rules that name this protocol in `protocols`.
         spec["usedBy"] = sorted(s["id"] for s in specs if spec["id"] in s["protocols"])
-    return {"specs": specs, "broken": broken, "uml": build_uml(tree)}
+    return {"specs": specs, "broken": broken, "external": external, "uml": build_uml(tree)}

@@ -3,6 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import {
   DEFAULT_REPO,
   blobUrl,
+  externalRef,
   refRows,
   type RepoRefs,
   type SourceIndex,
@@ -28,6 +29,9 @@ export class DataService {
   readonly error = signal<LoadError>(null);
   readonly repos = signal<string[]>([]);
   readonly repoRefs = signal<RepoRefs | null>(null);
+  /** The refs of other repositories that a reference names, loaded on first use. */
+  private readonly otherRefs = signal<ReadonlyMap<string, RepoRefs>>(new Map());
+  private readonly otherLoading = new Set<string>();
 
   /** §F/sources/refs/000006: the commit that the page shows. */
   readonly sha = computed(() => this.index()?.sha ?? '');
@@ -82,6 +86,23 @@ export class DataService {
   /** The link to a file or a line on GitHub at the commit of the source. */
   blob(path: string, line?: number | null): string {
     return blobUrl(this.repo(), this.sha(), path, line);
+  }
+
+  /**
+   * The router link of a spec in another repository. §F/references/specs/000105
+   * It loads the refs of that repository once and then links to the same branch or tag, or
+   * to its default branch.
+   */
+  externalLink(repo: string, id: string): string[] {
+    const other = this.otherRefs().get(repo);
+    if (!other && !this.otherLoading.has(repo)) {
+      this.otherLoading.add(repo);
+      this.http.get<RepoRefs>(`/api/repos/${encodeURIComponent(repo)}/refs`).subscribe({
+        next: (refs) => this.otherRefs.update((m) => new Map(m).set(repo, refs)),
+        error: () => undefined,
+      });
+    }
+    return ['/', repo, externalRef(this.ref(), other), ...id.split('/')];
   }
 
   /** The router link of a spec at the current source. §F/sources/refs/000009 */

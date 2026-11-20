@@ -298,3 +298,19 @@ def test_protocol_links(tree: dict[str, bytes]) -> None:
     assert specs["F/area/topic/000011"]["protocols"] == ["P/area/topic/000010"]
     assert specs["F/area/topic/000011"]["errors"] == []
     assert specs["P/area/topic/000010"]["usedBy"] == ["F/area/topic/000011"]
+
+
+def test_external_references(tree: dict[str, bytes]) -> None:
+    """§F/references/specs/000105: a reference with a repository name names a spec there."""
+    tree["frontend/src/x.ts"] = "// §ui-kit:NF/usability/layout/000192\n".encode()
+    tree["specs/requirements/functional/area/topic/000008_ext.md"] = spec(
+        "000008", "External", body="The rule must follow ui-kit:NF/usability/layout/000192."
+    )
+    index = build_index(tree)
+    assert [(r["repo"], r["ref"], r["path"]) for r in index["external"]] == [
+        ("ui-kit", "NF/usability/layout/000192", "frontend/src/x.ts")
+    ]
+    assert all(b["ref"] != "NF/usability/layout/000192" for b in index["broken"])
+    ext = _by_id(index)["F/area/topic/000008"]
+    assert ext["external"] == [{"repo": "ui-kit", "id": "NF/usability/layout/000192"}]
+    assert ext["mentions"] == []

@@ -67,7 +67,7 @@ specs/
 | [F/uml/links/000098](requirements/functional/uml/links/000098_uml-element-detail.md) | An element opens a detail with its path and its specs | approved |
 | [F/uml/links/000099](requirements/functional/uml/links/000099_spec-uml-elements.md) | The detail of a spec lists its UML elements | approved |
 | [F/uml/views/000095](requirements/functional/uml/views/000095_uml-page.md) | The page UML shows the views of specs/uml | approved |
-| [F/uml/views/000096](requirements/functional/uml/views/000096_uml-drawing.md) | A view is drawn as a diagram with the colours of the kit | draft |
+| [F/uml/views/000096](requirements/functional/uml/views/000096_uml-drawing.md) | A view is drawn as a diagram with the colours of the kit | approved |
 | [F/uml/views/000097](requirements/functional/uml/views/000097_uml-text-alternative.md) | Each view has a list with the same content | approved |
 | [NF/accessibility/conformance/000073](requirements/non-functional/accessibility/conformance/000073_wcag-22-aa.md) | Every view meets WCAG 2.2 level AA | approved |
 | [NF/accessibility/conformance/000074](requirements/non-functional/accessibility/conformance/000074_axe-every-route.md) | Every route passes an axe check in both themes | approved |
@@ -107,7 +107,7 @@ specs/
 | [NF/usability/layout/000038](requirements/non-functional/usability/layout/000038_system-theme.md) | The theme follows the system | approved |
 | [S/backend/python/000043](style/backend/python/000043_fastapi.md) | The server is Python with FastAPI | approved |
 | [S/frontend/angular/000041](style/frontend/angular/000041_ui-kit-only.md) | Pages are built from ui-kit components | approved |
-| [S/frontend/angular/000042](style/frontend/angular/000042_ui-kit-submodule.md) | The ui-kit is a git submodule | draft |
+| [S/frontend/angular/000042](style/frontend/angular/000042_ui-kit-submodule.md) | The ui-kit is a git submodule | approved |
 | [S/frontend/angular/000106](style/frontend/angular/000106_kit-framework.md) | The frontend runs on the ui-kit framework | approved |
 | [S/frontend/angular/000107](style/frontend/angular/000107_no-own-styles.md) | The frontend has no styles of its own | approved |
 | [S/shared/license/000044](style/shared/license/000044_gpl.md) | The repository is GPL-3.0-or-later | approved |

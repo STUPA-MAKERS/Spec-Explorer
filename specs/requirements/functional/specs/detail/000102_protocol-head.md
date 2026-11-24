@@ -4,11 +4,11 @@ title: The detail of a protocol spec shows version and media type
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-15
+updated: 2026-11-24
 tests:
   - "frontend/src/app/spec-detail.component.spec.ts:SpecDetailComponent.protocolHead"
 implementation:
-  - frontend/src/app/spec-detail.component.html
+  - frontend/src/app/spec-detail.component.ts
 scope:
   - frontend
 ---

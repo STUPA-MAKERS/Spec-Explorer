@@ -10,7 +10,7 @@ The rules of the app are in [specs/](specs/README.md).
 | Path | What it holds |
 | --- | --- |
 | `backend/` | The server: Python 3.13, FastAPI. It reads GitHub, builds the index of a commit and serves the API and the frontend. |
-| `frontend/` | The Angular 20 app. It includes the ui-kit as the submodule `frontend/vendor/ui-kit`. |
+| `frontend/` | The Angular 22 app. It includes the ui-kit as the submodule `frontend/vendor/ui-kit`. |
 | `deploy/` | The container and how to run it. |
 | `scripts/check_specs.py` | The format check of `specs/`. |
 

@@ -4,12 +4,12 @@ title: The list filters by status and kind
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-06
+updated: 2026-11-24
 tests:
   - "frontend/src/app/model.spec.ts:filterSpecs.statusAndKind"
 implementation:
   - frontend/src/app/model.ts
-  - frontend/src/app/explorer.component.html
+  - frontend/src/app/explorer.component.ts
 scope:
   - frontend
 ---

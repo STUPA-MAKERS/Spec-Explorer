@@ -4,11 +4,11 @@ title: The detail shows the front matter
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-06
+updated: 2026-11-24
 tests:
   - "frontend/src/app/spec-detail.component.spec.ts:SpecDetailComponent.frontMatter"
 implementation:
-  - frontend/src/app/spec-detail.component.html
+  - frontend/src/app/spec-detail.component.ts
 scope:
   - frontend
 ---

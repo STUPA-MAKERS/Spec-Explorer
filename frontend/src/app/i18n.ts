@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 /** The UI languages. §NF/accessibility/language/000039 */
 export type Lang = 'de' | 'en';
@@ -83,6 +83,9 @@ const DE = {
   open: 'Öffnen',
   cancel: 'Abbrechen',
   current: 'aktuell',
+  searchRef: 'Branch, Tag oder Commit-SHA',
+  refList: 'Stände',
+  noRefFound: 'Kein Stand passt zur Suche',
   notFound: 'Diesen Stand gibt es nicht',
   tooLarge: 'Das Repository ist zu groß',
   loadFailed: 'Laden fehlgeschlagen',
@@ -194,6 +197,9 @@ const EN: Record<Key, string> = {
   open: 'Open',
   cancel: 'Cancel',
   current: 'current',
+  searchRef: 'Branch, tag or commit SHA',
+  refList: 'Versions',
+  noRefFound: 'No version matches the search',
   notFound: 'This version does not exist',
   tooLarge: 'The repository is too large',
   loadFailed: 'Loading failed',
@@ -237,19 +243,27 @@ export function pickLang(languages: readonly string[]): Lang {
   return 'de';
 }
 
+/**
+ * The UI language. It lives outside the service, because the framework config reads it before
+ * the app has an injector (`provideFramework`).
+ */
+export const LANG = signal<Lang>(
+  pickLang(typeof navigator === 'undefined' ? [] : (navigator.languages ?? [navigator.language])),
+);
+
 /** The texts of the app in the browser language. */
 @Injectable({ providedIn: 'root' })
 export class I18n {
-  readonly lang = signal<Lang>(
-    pickLang(typeof navigator === 'undefined' ? [] : (navigator.languages ?? [navigator.language])),
-  );
-  private readonly texts = computed(() => TEXTS[this.lang()]);
+  readonly lang = LANG;
 
   /** The text of a key; `{name}` takes the value of `params.name`. */
-  readonly t = (key: string, params: Record<string, string | number> = {}): string => {
-    const text = (this.texts() as Record<string, string>)[key] ?? key;
-    return text.replace(/\{(\w+)\}/g, (m, name: string) =>
-      name in params ? String(params[name]) : m,
-    );
-  };
+  readonly t = translate;
+}
+
+/** The text of a key in the UI language; `{name}` takes the value of `params.name`. */
+export function translate(key: string, params: Record<string, string | number> = {}): string {
+  const text = (TEXTS[LANG()] as Record<string, string>)[key] ?? key;
+  return text.replace(/\{(\w+)\}/g, (m, name: string) =>
+    name in params ? String(params[name]) : m,
+  );
 }

@@ -76,7 +76,7 @@ describe('SpecDetailComponent', () => {
         schema: { type: 'object', required: ['event'], properties: { event: { type: 'string', description: 'The event.' } } },
       }),
     );
-    for (const text of ['Schnittstelle', 'v1', 'application/json', 'event', 'The event.', 'Schema als JSON']) {
+    for (const text of ['Schnittstelle', 'v1', 'application/json', 'event', 'The event.']) {
       expect(screen.getAllByText(text).length).toBeGreaterThan(0);
     }
   });

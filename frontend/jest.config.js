@@ -8,6 +8,9 @@ module.exports = {
   moduleNameMapper: {
     '^@stupa-makers/ui-kit/shell$': '<rootDir>/vendor/ui-kit/shell/src/public-api.ts',
     '^@stupa-makers/ui-kit/markdown-view$': '<rootDir>/vendor/ui-kit/markdown-view/src/public-api.ts',
+    '^@stupa-makers/ui-kit/markdown-editor$': '<rootDir>/vendor/ui-kit/markdown-editor/src/public-api.ts',
+    '^@stupa-makers/ui-kit/screens$': '<rootDir>/vendor/ui-kit/screens/src/public-api.ts',
+    '^@stupa-makers/ui-kit/views/(.*)$': '<rootDir>/vendor/ui-kit/views/$1/src/public-api.ts',
     '^@stupa-makers/ui-kit$': '<rootDir>/vendor/ui-kit/src/public-api.ts',
     '\\.(css|scss)$': '<rootDir>/src/testing/style-mock.js',
   },

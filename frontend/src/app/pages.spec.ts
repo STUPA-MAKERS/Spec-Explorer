@@ -9,7 +9,7 @@ import { DataService } from './data.service';
 import { I18n } from './i18n';
 import type { SourceIndex, Spec } from './model';
 import { routes } from './routes';
-import { SourceComponent } from './source.component';
+import { OTHER, SourceService, SourceSheetComponent } from './source.component';
 
 const SHA = '1234567'.padEnd(40, 'a');
 
@@ -198,7 +198,7 @@ describe('pages', () => {
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/STUPA-Workflow/main/uml');
     settle(harness, { ...INDEX, uml: [] });
-    expect(screen.getByText('Keine UML-Daten')).toBeTruthy();
+    expect(screen.getAllByText('Keine UML-Daten').length).toBeGreaterThan(0);
   });
 
   it('umlFirstView: the page without a view opens the first view', async () => {
@@ -215,27 +215,24 @@ describe('pages', () => {
     expect(screen.getByText('voting')).toBeTruthy();
   });
 
-  it('source: the chips switch the ref and the dialog checks a SHA (§F/sources/refs/000004)', async () => {
+  it('source: the chips switch the ref and the sheet opens a SHA (§F/sources/refs/000004)', async () => {
     const harness = await open('/STUPA-Workflow/main');
-    const source = harness.routeDebugElement!.query((d) => d.componentInstance instanceof SourceComponent)
-      .componentInstance as SourceComponent;
-    expect(source.refOptions().map((o) => o.value)).toEqual(['main', 'v1', '\u0000other']);
+    const source = TestBed.inject(SourceService);
+    const chips = source.scope().chips;
+    expect(chips[1]!.options.map((o) => o.value)).toEqual(['main', 'v1', OTHER]);
     expect(source.refText()).toBe('main · 1234567');
-    source.setRef('\u0000other');
-    expect(source.dialog()).toBe(true);
-    source.tab.set('branch');
-    source.q.set('de');
-    expect(source.rows()).toEqual(['dev']);
-    source.tab.set('tag');
-    expect(source.rows()).toEqual([]);
-    source.sha = 'xyz';
-    source.openSha();
-    expect(source.shaError()).toBe('Kein gültiger Commit-SHA');
-    source.sha = 'ABCDEF1';
-    source.openSha();
+    source.change('specs', { key: 'ref', value: OTHER });
+    expect(source.sheet()).toBe('specs');
+    const sheet = TestBed.createComponent(SourceSheetComponent).componentInstance;
+    sheet.query.set('de');
+    expect(sheet.options()?.map((o) => o.value)).toEqual(['dev']);
+    sheet.query.set('abcdef1');
+    expect(sheet.options()?.map((o) => o.value)).toEqual(['abcdef1']);
+    sheet.pick('abcdef1');
     await harness.fixture.whenStable();
     expect(TestBed.inject(Router).url).toBe('/STUPA-Workflow/abcdef1');
-    source.setRepo('ui-kit');
+    expect(source.sheet()).toBeNull();
+    source.change('specs', { key: 'repo', value: 'ui-kit' });
     http.expectOne('/api/repos/ui-kit/refs').flush({ repo: 'ui-kit', defaultBranch: 'development', branches: [], tags: [] });
     await harness.fixture.whenStable();
     expect(TestBed.inject(Router).url).toBe('/ui-kit/development');

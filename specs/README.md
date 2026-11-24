@@ -67,7 +67,7 @@ specs/
 | [F/uml/links/000098](requirements/functional/uml/links/000098_uml-element-detail.md) | An element opens a detail with its path and its specs | approved |
 | [F/uml/links/000099](requirements/functional/uml/links/000099_spec-uml-elements.md) | The detail of a spec lists its UML elements | approved |
 | [F/uml/views/000095](requirements/functional/uml/views/000095_uml-page.md) | The page UML shows the views of specs/uml | approved |
-| [F/uml/views/000096](requirements/functional/uml/views/000096_uml-drawing.md) | A view is drawn as a diagram with the colours of the kit | approved |
+| [F/uml/views/000096](requirements/functional/uml/views/000096_uml-drawing.md) | A view is drawn as a diagram with the colours of the kit | draft |
 | [F/uml/views/000097](requirements/functional/uml/views/000097_uml-text-alternative.md) | Each view has a list with the same content | approved |
 | [NF/accessibility/conformance/000073](requirements/non-functional/accessibility/conformance/000073_wcag-22-aa.md) | Every view meets WCAG 2.2 level AA | approved |
 | [NF/accessibility/conformance/000074](requirements/non-functional/accessibility/conformance/000074_axe-every-route.md) | Every route passes an axe check in both themes | approved |
@@ -81,7 +81,7 @@ specs/
 | [NF/accessibility/interaction/000089](requirements/non-functional/accessibility/interaction/000089_dialog-focus.md) | A dialog keeps the focus inside | approved |
 | [NF/accessibility/interaction/000090](requirements/non-functional/accessibility/interaction/000090_target-size.md) | A target is at least 24 by 24 px | approved |
 | [NF/accessibility/interaction/000091](requirements/non-functional/accessibility/interaction/000091_status-announced.md) | A status message is announced | approved |
-| [NF/accessibility/interaction/000092](requirements/non-functional/accessibility/interaction/000092_landmarks-headings.md) | Each page has landmarks and one h1 | approved |
+| [NF/accessibility/interaction/000092](requirements/non-functional/accessibility/interaction/000092_landmarks-headings.md) | Each page has landmarks and one h1 per pane | approved |
 | [NF/accessibility/language/000039](requirements/non-functional/accessibility/language/000039_de-en.md) | The UI is German and English | approved |
 | [NF/accessibility/language/000093](requirements/non-functional/accessibility/language/000093_page-language.md) | The page language follows the UI language | approved |
 | [NF/accessibility/language/000094](requirements/non-functional/accessibility/language/000094_content-language.md) | Spec text has its own lang | approved |
@@ -107,7 +107,9 @@ specs/
 | [NF/usability/layout/000038](requirements/non-functional/usability/layout/000038_system-theme.md) | The theme follows the system | approved |
 | [S/backend/python/000043](style/backend/python/000043_fastapi.md) | The server is Python with FastAPI | approved |
 | [S/frontend/angular/000041](style/frontend/angular/000041_ui-kit-only.md) | Pages are built from ui-kit components | approved |
-| [S/frontend/angular/000042](style/frontend/angular/000042_ui-kit-submodule.md) | The ui-kit is a git submodule | approved |
+| [S/frontend/angular/000042](style/frontend/angular/000042_ui-kit-submodule.md) | The ui-kit is a git submodule | draft |
+| [S/frontend/angular/000106](style/frontend/angular/000106_kit-framework.md) | The frontend runs on the ui-kit framework | approved |
+| [S/frontend/angular/000107](style/frontend/angular/000107_no-own-styles.md) | The frontend has no styles of its own | approved |
 | [S/shared/license/000044](style/shared/license/000044_gpl.md) | The repository is GPL-3.0-or-later | approved |
 | [S/specs/content/000059](style/specs/content/000059_only-the-rule.md) | A spec contains only the rule | approved |
 | [S/specs/content/000060](style/specs/content/000060_one-thing.md) | One rule controls one thing | approved |

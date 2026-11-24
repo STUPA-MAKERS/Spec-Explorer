@@ -1,4 +1,4 @@
-import { linePath, endPlace } from './uml-diagram.component';
+import { umlEndPlace as endPlace, umlLinePath as linePath } from '@stupa-makers/ui-kit/views/uml';
 import { layoutComponents, umlGraph, START } from './uml-layout';
 import type { UmlData } from './uml';
 

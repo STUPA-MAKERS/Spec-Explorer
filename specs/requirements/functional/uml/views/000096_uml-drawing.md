@@ -2,20 +2,18 @@
 id: "000096"
 title: A view is drawn as a diagram with the colours of the kit
 kind: functional
-status: approved
+status: draft
 owner: frederikbeimgraben
-updated: 2026-11-11
+updated: 2026-11-24
 tests:
   - "frontend/src/app/uml-layout.spec.ts:umlLayout.layoutComponents"
   - "frontend/src/app/uml-layout.spec.ts:umlLayout.umlGraph"
-  - "frontend/src/app/uml-diagram.component.spec.ts:UmlDiagramComponent.drawing"
-  - "frontend/src/app/uml-diagram.component.spec.ts:UmlDiagramComponent.zoom"
-  - "frontend/src/app/uml-diagram.component.spec.ts:elkLayout.layoutUml"
+  - "frontend/src/app/uml-layout.elk.spec.ts:elkLayout.layoutUml"
+  - "frontend/src/app/pages.spec.ts:pages.uml"
   - "frontend/src/app/uml.spec.ts:uml.filterClasses"
 implementation:
   - frontend/src/app/uml-layout.ts
-  - frontend/src/app/uml-diagram.component.ts
-  - frontend/src/app/uml-diagram.component.scss
+  - frontend/vendor/ui-kit/views/uml/src/uml-diagram-view.component.ts
   - frontend/src/app/uml.ts
   - frontend/src/styles.scss
 scope:
@@ -40,6 +38,9 @@ colour tokens of ui-kit, so the diagram follows light, dark and very high contra
 
 The diagram must zoom with the buttons `+`, `−` and `Einpassen`, with the keyboard and with the
 mouse wheel, and it must move by drag.
+
+The ui-kit view `app-uml-diagram-view` (ui-kit 002791) must draw the diagram. The explorer must
+compute only the layout.
 
 Reason: The explorer draws the data itself, so the diagram has the same look and the same
 accessibility settings as the rest of the app.

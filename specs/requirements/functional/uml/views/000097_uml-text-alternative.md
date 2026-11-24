@@ -4,14 +4,14 @@ title: Each view has a list with the same content
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-11
+updated: 2026-11-24
 tests:
   - "frontend/src/app/uml.spec.ts:uml.umlRows"
   - "frontend/src/app/pages.spec.ts:pages.uml"
 implementation:
   - frontend/src/app/uml.ts
-  - frontend/src/app/uml.component.html
-  - frontend/src/app/uml-diagram.component.ts
+  - frontend/src/app/uml.component.ts
+  - frontend/vendor/ui-kit/views/uml/src/uml-diagram-view.component.ts
 scope:
   - frontend
 ---

@@ -2,7 +2,7 @@
 id: "000107"
 title: The frontend has no styles of its own
 kind: style
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-24
 tests:

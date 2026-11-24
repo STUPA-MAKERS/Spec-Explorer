@@ -2,7 +2,7 @@
 id: "000106"
 title: The frontend runs on the ui-kit framework
 kind: style
-status: draft
+status: approved
 owner: frederikbeimgraben
 updated: 2026-11-24
 implementation:

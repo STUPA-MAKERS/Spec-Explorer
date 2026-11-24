@@ -108,8 +108,8 @@ specs/
 | [S/backend/python/000043](style/backend/python/000043_fastapi.md) | The server is Python with FastAPI | approved |
 | [S/frontend/angular/000041](style/frontend/angular/000041_ui-kit-only.md) | Pages are built from ui-kit components | approved |
 | [S/frontend/angular/000042](style/frontend/angular/000042_ui-kit-submodule.md) | The ui-kit is a git submodule | draft |
-| [S/frontend/angular/000106](style/frontend/angular/000106_kit-framework.md) | The frontend runs on the ui-kit framework | draft |
-| [S/frontend/angular/000107](style/frontend/angular/000107_no-own-styles.md) | The frontend has no styles of its own | draft |
+| [S/frontend/angular/000106](style/frontend/angular/000106_kit-framework.md) | The frontend runs on the ui-kit framework | approved |
+| [S/frontend/angular/000107](style/frontend/angular/000107_no-own-styles.md) | The frontend has no styles of its own | approved |
 | [S/shared/license/000044](style/shared/license/000044_gpl.md) | The repository is GPL-3.0-or-later | approved |
 | [S/specs/content/000059](style/specs/content/000059_only-the-rule.md) | A spec contains only the rule | approved |
 | [S/specs/content/000060](style/specs/content/000060_one-thing.md) | One rule controls one thing | approved |

@@ -81,7 +81,7 @@ specs/
 | [NF/accessibility/interaction/000089](requirements/non-functional/accessibility/interaction/000089_dialog-focus.md) | A dialog keeps the focus inside | approved |
 | [NF/accessibility/interaction/000090](requirements/non-functional/accessibility/interaction/000090_target-size.md) | A target is at least 24 by 24 px | approved |
 | [NF/accessibility/interaction/000091](requirements/non-functional/accessibility/interaction/000091_status-announced.md) | A status message is announced | approved |
-| [NF/accessibility/interaction/000092](requirements/non-functional/accessibility/interaction/000092_landmarks-headings.md) | Each page has landmarks and one h1 | approved |
+| [NF/accessibility/interaction/000092](requirements/non-functional/accessibility/interaction/000092_landmarks-headings.md) | Each page has landmarks and one h1 per pane | approved |
 | [NF/accessibility/language/000039](requirements/non-functional/accessibility/language/000039_de-en.md) | The UI is German and English | approved |
 | [NF/accessibility/language/000093](requirements/non-functional/accessibility/language/000093_page-language.md) | The page language follows the UI language | approved |
 | [NF/accessibility/language/000094](requirements/non-functional/accessibility/language/000094_content-language.md) | Spec text has its own lang | approved |

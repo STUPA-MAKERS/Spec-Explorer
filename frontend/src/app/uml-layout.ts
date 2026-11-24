@@ -11,51 +11,30 @@
  * - State view: left to right, a start point before the initial state.
  */
 import type { ElkExtendedEdge, ElkNode } from 'elkjs/lib/elk-api';
+import {
+  UML_CHAR_W,
+  UML_HEAD_H,
+  UML_LINE_H,
+  UML_PAD_X,
+  type UmlBox,
+  type UmlLayout,
+  type UmlLine,
+} from '@stupa-makers/ui-kit/views/uml';
 import { edgeLabel, edgesOf, elementLines, type UmlData, type UmlEdge, type UmlKind } from './uml';
 
-/** The size of the text in the drawing, in SVG units. */
-export const CHAR_W = 7.4;
-export const LINE_H = 18;
-export const HEAD_H = 30;
-export const PAD_X = 12;
+export type { UmlBox, UmlLayout, UmlLine };
+
+/** The text sizes of the drawing: the UML view of the kit draws with the same. */
+const CHAR_W = UML_CHAR_W;
+const LINE_H = UML_LINE_H;
+const HEAD_H = UML_HEAD_H;
+const PAD_X = UML_PAD_X;
 export const START = '__start';
 const FRAME_PAD = 28;
 
-export interface UmlBox {
-  id: string;
-  /** `element`: an element of the view; `frame`: a module or network; `start`: the start point. */
-  role: 'element' | 'frame' | 'start';
-  name: string;
-  lines: string[];
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-export interface UmlLine {
-  id: string;
-  from: string;
-  to: string;
-  points: { x: number; y: number }[];
-  label: string;
-  labelX: number;
-  labelY: number;
-  dashed: boolean;
-  /** The points are a cubic Bézier curve (start, two control points, end), not corners. */
-  curve: boolean;
-  /** The width of the stroke: thicker for more import lines. */
-  weight: number;
-  /** The multiplicity at the start and at the end of a foreign key. */
-  ends: [string, string] | null;
-}
-
-export interface UmlLayout {
-  width: number;
-  height: number;
-  boxes: UmlBox[];
-  lines: UmlLine[];
-}
+/** A box and a line while the layout builds them; the kit view takes them read-only. */
+type Box = { -readonly [K in keyof UmlBox]: UmlBox[K] };
+type Line = { -readonly [K in keyof UmlLine]: UmlLine[K] };
 
 function textWidth(text: string): number {
   return text.length * CHAR_W;
@@ -143,7 +122,7 @@ export function umlGraph(kind: UmlKind, data: UmlData): ElkNode {
 type Elk = { layout(graph: ElkNode): Promise<ElkNode> };
 let elk: Promise<Elk> | null = null;
 
-function collect(node: ElkNode, kind: UmlKind, data: UmlData, boxes: UmlBox[]): void {
+function collect(node: ElkNode, kind: UmlKind, data: UmlData, boxes: Box[]): void {
   for (const child of node.children ?? []) {
     const x = child.x ?? 0;
     const y = child.y ?? 0;
@@ -173,9 +152,9 @@ const COMP_H = 34;
  */
 export function layoutComponents(data: UmlData, layerName: (n: number) => string): UmlLayout {
   const layers = [...new Set(data.elements.map((e) => e.layer ?? 0))].sort((a, b) => a - b);
-  const boxes: UmlBox[] = [];
-  const frames: UmlBox[] = [];
-  const at = new Map<string, UmlBox>();
+  const boxes: Box[] = [];
+  const frames: Box[] = [];
+  const at = new Map<string, Box>();
   let y = 0;
   let width = 0;
   for (const layer of layers) {
@@ -189,7 +168,7 @@ export function layoutComponents(data: UmlData, layerName: (n: number) => string
         x = 16;
         rowY += COMP_H + BOX_GAP;
       }
-      const box: UmlBox = { id: el.id, role: 'element', name: el.name, lines: [], x, y: rowY, w, h: COMP_H };
+      const box: Box = { id: el.id, role: 'element', name: el.name, lines: [], x, y: rowY, w, h: COMP_H };
       boxes.push(box);
       at.set(el.id, box);
       x += w + BOX_GAP;
@@ -203,13 +182,13 @@ export function layoutComponents(data: UmlData, layerName: (n: number) => string
   const edges = edgesOf(data);
   const slots = (id: string, side: 'out' | 'in'): Map<UmlEdge, number> => {
     const mine = edges.filter((e) => (side === 'out' ? e.from : e.to) === id);
-    const other = (e: UmlEdge): UmlBox | undefined => at.get(side === 'out' ? e.to : e.from);
+    const other = (e: UmlEdge): Box | undefined => at.get(side === 'out' ? e.to : e.from);
     mine.sort((a, b) => (other(a)?.x ?? 0) - (other(b)?.x ?? 0));
     return new Map(mine.map((e, i) => [e, (i + 1) / (mine.length + 1)]));
   };
   const outSlots = new Map(data.elements.map((e) => [e.id, slots(e.id, 'out')]));
   const inSlots = new Map(data.elements.map((e) => [e.id, slots(e.id, 'in')]));
-  const lines: UmlLine[] = edges.flatMap((e, i) => {
+  const lines: Line[] = edges.flatMap((e, i) => {
     const a = at.get(e.from);
     const b = at.get(e.to);
     if (!a || !b) return [];
@@ -255,11 +234,11 @@ export async function layoutUml(
   if (kind === 'components') return layoutComponents(data, layerName);
   elk ??= import('elkjs/lib/elk.bundled.js').then((m) => new m.default() as unknown as Elk);
   const out = await (await elk).layout(umlGraph(kind, data));
-  const boxes: UmlBox[] = [];
+  const boxes: Box[] = [];
   collect(out, kind, data, boxes);
   boxes.sort((a, b) => Number(b.role === 'frame') - Number(a.role === 'frame'));
   const edges = edgesOf(data);
-  const lines: UmlLine[] = (out.edges ?? []).map((e) => {
+  const lines: Line[] = (out.edges ?? []).map((e) => {
     const section = e.sections?.[0];
     const points = section ? [section.startPoint, ...(section.bendPoints ?? []), section.endPoint] : [];
     const label = e.labels?.[0];

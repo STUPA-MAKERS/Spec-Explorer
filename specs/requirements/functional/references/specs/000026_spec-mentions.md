@@ -4,12 +4,12 @@ title: The detail lists the specs that name each other
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-06
+updated: 2026-11-24
 tests:
   - "backend/tests/test_specindex.py:test_spec_mentions"
 implementation:
   - backend/app/specindex.py
-  - frontend/src/app/spec-detail.component.html
+  - frontend/src/app/spec-detail.component.ts
 scope:
   - backend
   - frontend

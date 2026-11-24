@@ -4,10 +4,9 @@ title: An element opens a detail with its path and its specs
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-11
+updated: 2026-11-24
 tests:
   - "frontend/src/app/uml.spec.ts:uml.specsForPath"
-  - "frontend/src/app/uml-diagram.component.spec.ts:UmlDiagramComponent.pick"
   - "frontend/src/app/pages.spec.ts:pages.uml"
 implementation:
   - frontend/src/app/uml.ts

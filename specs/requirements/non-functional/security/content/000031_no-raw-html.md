@@ -4,11 +4,11 @@ title: Spec Markdown renders without raw HTML
 kind: non-functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-06
+updated: 2026-11-24
 tests:
   - "frontend/src/app/markdown.spec.ts:noRawHtml"
 implementation:
-  - frontend/src/app/spec-detail.component.html
+  - frontend/src/app/spec-detail.component.ts
   - frontend/src/app/ref-detail.component.ts
 scope:
   - frontend

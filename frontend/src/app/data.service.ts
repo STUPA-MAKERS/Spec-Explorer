@@ -14,6 +14,12 @@ import {
 export type LoadError = number | null;
 
 /**
+ * The repository and the ref that the pages show. They live outside the service, because the
+ * framework config reads them before the app has an injector (`provideFramework`).
+ */
+export const SOURCE = { repo: signal(DEFAULT_REPO), ref: signal('') } as const;
+
+/**
  * The source that the pages show: one repository and one ref, and the index of its commit.
  * The server does all GitHub access; the browser talks only to `/api`.
  */
@@ -23,8 +29,8 @@ export class DataService {
   private requestId = 0;
   private key = '';
 
-  readonly repo = signal(DEFAULT_REPO);
-  readonly ref = signal('');
+  readonly repo = SOURCE.repo;
+  readonly ref = SOURCE.ref;
   readonly index = signal<SourceIndex | null>(null);
   readonly error = signal<LoadError>(null);
   readonly repos = signal<string[]>([]);

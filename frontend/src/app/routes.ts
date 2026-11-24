@@ -7,16 +7,16 @@ import {
   type Routes,
   type UrlMatchResult,
 } from '@angular/router';
+import { FOCUS_H1, ListNoneComponent } from '@stupa-makers/ui-kit/shell';
 import { catchError, map, of } from 'rxjs';
 import { ExplorerComponent } from './explorer.component';
+import { translate } from './i18n';
 import { DEFAULT_REPO, RULE_ID_RE, type RepoRefs } from './model';
 import { RefDetailComponent } from './ref-detail.component';
-import { RefNoneComponent } from './ref-none.component';
 import { RefsComponent } from './refs.component';
 import { SpecDetailComponent } from './spec-detail.component';
-import { SpecNoneComponent } from './spec-none.component';
 import { UmlComponent } from './uml.component';
-import { UmlElementComponent, UmlNoneComponent } from './uml-element.component';
+import { UmlElementComponent } from './uml-element.component';
 
 /** §F/sources/refs/000009: the rule ID keeps its `/` in the URL, so it spans segments. */
 export function ruleIdMatcher(segments: UrlSegment[]): UrlMatchResult | null {
@@ -39,41 +39,53 @@ export const toDefaultBranch: CanActivateFn = (route) => {
     );
 };
 
+/** The route data of a list or a detail: the shell moves the focus to its `h1` (000512). */
+const FOCUS = { [FOCUS_H1]: true };
+/** A list page takes the whole width, as before (the route flag `wide` of the kit shell). */
+const PAGE = { ...FOCUS, wide: true };
+
+/** The title of a page in the UI language. §NF/accessibility/interaction/000087 */
+const title = (key: string): string => `${translate(key)} · Spec-Explorer`;
+
 export const routes: Routes = [
   { path: '', pathMatch: 'full', canActivate: [toDefaultBranch], children: [] },
   {
     path: 'verweise/:repo/:ref',
+    title: title('refs'),
     component: RefsComponent,
-    data: { wide: true },
+    data: PAGE,
     children: [
-      { path: '', component: RefNoneComponent },
-      { path: ':n', component: RefDetailComponent },
+      { path: '', component: ListNoneComponent },
+      { path: ':n', component: RefDetailComponent, data: FOCUS },
     ],
   },
   { path: ':repo', pathMatch: 'full', canActivate: [toDefaultBranch], children: [] },
   // §F/uml/views/000095: the URL holds the repository, the ref and the view.
   {
     path: ':repo/:ref/uml',
+    title: title('uml'),
     component: UmlComponent,
-    data: { wide: true },
-    children: [{ path: '', component: UmlNoneComponent }],
+    data: PAGE,
+    children: [{ path: '', component: ListNoneComponent }],
   },
   {
     path: ':repo/:ref/uml/:view',
+    title: title('uml'),
     component: UmlComponent,
-    data: { wide: true },
+    data: PAGE,
     children: [
-      { path: '', component: UmlNoneComponent },
-      { path: ':el', component: UmlElementComponent },
+      { path: '', component: ListNoneComponent },
+      { path: ':el', component: UmlElementComponent, data: FOCUS },
     ],
   },
   {
     path: ':repo/:ref',
+    title: title('specs'),
     component: ExplorerComponent,
-    data: { wide: true },
+    data: PAGE,
     children: [
-      { path: '', component: SpecNoneComponent },
-      { matcher: ruleIdMatcher, component: SpecDetailComponent },
+      { path: '', component: ListNoneComponent },
+      { matcher: ruleIdMatcher, component: SpecDetailComponent, data: FOCUS },
     ],
   },
 ];

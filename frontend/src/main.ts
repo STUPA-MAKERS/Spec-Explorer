@@ -1,18 +1,18 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { inject, provideZoneChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { loadingInterceptor, provideUiKit, uiKitIntlFromLang } from '@stupa-makers/ui-kit';
-import { provideRouteMotion } from '@stupa-makers/ui-kit/shell';
+import { loadingInterceptor } from '@stupa-makers/ui-kit';
+import { provideFramework, provideRouteMotion } from '@stupa-makers/ui-kit/shell';
 import { App } from './app/app';
-import { I18n } from './app/i18n';
+import { explorerConfig } from './app/config';
 import { routes } from './app/routes';
 
 bootstrapApplication(App, {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideRouter(routes, withComponentInputBinding(), provideRouteMotion()),
     provideHttpClient(withInterceptors([loadingInterceptor])),
-    provideUiKit({ intl: () => uiKitIntlFromLang(inject(I18n).lang) }),
+    provideFramework(explorerConfig()),
   ],
 }).catch((e: unknown) => console.error(e));

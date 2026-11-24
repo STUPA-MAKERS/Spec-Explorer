@@ -1,77 +1,137 @@
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
-import {
-  ButtonComponent,
   EmptyStateComponent,
   FilterSelectComponent,
-  ListDetailLayoutComponent,
-  ListGroupComponent,
-  ListItemComponent,
-  PageHeaderComponent,
-  ScrollFadeDirective,
   SegmentedComponent,
-  StickyBarComponent,
   type FilterSelectOption,
+  type ListGroup,
+  type ListRow,
+  type LoadState,
   type SegmentedOption,
 } from '@stupa-makers/ui-kit';
-import { injectListDetailPage } from '@stupa-makers/ui-kit/shell';
+import {
+  ListDetailScreenComponent,
+  ScreenBodyDirective,
+  ScreenFiltersDirective,
+  ScreenToolsDirective,
+} from '@stupa-makers/ui-kit/screens';
+import { UmlDiagramViewComponent, type UmlLayout } from '@stupa-makers/ui-kit/views/uml';
 import { DataService } from './data.service';
 import { errorKey } from './explorer.component';
 import { I18n } from './i18n';
-import { SourceComponent } from './source.component';
-import { biggestModule, classModules, edgeLabel, filterClasses, kindOf, umlRows, viewLabel, type UmlEdge, type UmlRow } from './uml';
-import { UmlDiagramComponent } from './uml-diagram.component';
-import { layoutUml, type UmlLayout } from './uml-layout';
+import { SourceService } from './source.component';
+import {
+  biggestModule,
+  classModules,
+  edgeLabel,
+  filterClasses,
+  kindOf,
+  umlRows,
+  viewLabel,
+  type UmlEdge,
+  type UmlRow,
+} from './uml';
+import { layoutUml } from './uml-layout';
 
 /**
  * The page `UML`: the views of `specs/uml/` at the source, as a diagram or as a list, and the
- * detail of one element. §F/uml/views/000095, §F/uml/views/000096, §F/uml/views/000097
+ * detail of one element, on the list/detail screen of the kit with the UML view of the kit.
+ * §F/uml/views/000095, §F/uml/views/000096, §F/uml/views/000097
  */
 @Component({
   selector: 'app-uml',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterOutlet,
-    ButtonComponent,
     EmptyStateComponent,
     FilterSelectComponent,
-    ListDetailLayoutComponent,
-    ListGroupComponent,
-    ListItemComponent,
-    PageHeaderComponent,
-    ScrollFadeDirective,
+    ListDetailScreenComponent,
+    ScreenBodyDirective,
+    ScreenFiltersDirective,
+    ScreenToolsDirective,
     SegmentedComponent,
-    StickyBarComponent,
-    SourceComponent,
-    UmlDiagramComponent,
+    UmlDiagramViewComponent,
   ],
-  host: { '[class.pane-page]': 'split()' },
-  templateUrl: './uml.component.html',
-  styleUrls: ['./explorer.component.scss', './uml.component.scss'],
+  template: `
+    <app-list-detail-screen
+      [head]="{ title: t('uml') }"
+      [scope]="source.scope()"
+      [filtersLabel]="t('filter')"
+      [rows]="rows()"
+      [none]="{ heading: t('uml.pick'), icon: 'shapes' }"
+      [config]="{ param: 'el', listWidth: 'fill' }"
+      (scopeChange)="source.change('uml', $event)"
+    >
+      @if (views().length) {
+        <ng-template screenFilters>
+          <app-filter-select
+            [label]="t('uml.view')"
+            [options]="viewOptions()"
+            [value]="view()"
+            [text]="viewText()"
+            (valueChange)="pickView($event)"
+            filled
+          />
+          @if (kind() === 'classes' && current()?.data) {
+            <app-filter-select
+              [label]="t('uml.module')"
+              [options]="moduleOptions()"
+              [value]="module()"
+              [text]="moduleText()"
+              (valueChange)="pickedModule.set($event)"
+              filled
+            />
+          }
+        </ng-template>
+        <ng-template screenTools>
+          <app-segmented
+            [options]="modeOptions()"
+            [ariaLabel]="t('uml.mode')"
+            [value]="mode()"
+            (valueChange)="mode.set($event === 'list' ? 'list' : 'diagram')"
+          />
+        </ng-template>
+      }
+      @if (broken(); as v) {
+        <ng-template screenBody>
+          <app-empty-state icon="alert" [heading]="t('uml.broken')">
+            <p>{{ v.file }}</p>
+            <ul>
+              @for (e of v.errors; track $index) {
+                <li>{{ e }}</li>
+              }
+            </ul>
+          </app-empty-state>
+        </ng-template>
+      } @else if (mode() === 'diagram' && current()) {
+        <ng-template screenBody>
+          @if (layout(); as l) {
+            <app-uml-diagram-view
+              [layout]="l"
+              [selected]="selected()"
+              [state]="kind() === 'state'"
+              [label]="diagramLabel()"
+              (pick)="pick($event)"
+            />
+          }
+        </ng-template>
+      }
+    </app-list-detail-screen>
+  `,
 })
 export class UmlComponent {
   readonly data = inject(DataService);
+  readonly source = inject(SourceService);
   private readonly router = inject(Router);
   readonly t = inject(I18n).t;
-  private readonly layoutRef = viewChild(ListDetailLayoutComponent);
-  private readonly ld = injectListDetailPage(this.layoutRef, { param: 'el' });
-  readonly split = this.ld.split;
-  readonly selectedId = this.ld.selectedId;
 
   /** Route parameters. */
   readonly repo = input('');
   readonly ref = input('');
   readonly view = input('');
 
+  /** The element of the open detail; the detail sets it. */
+  readonly selected = signal<string | null>(null);
   readonly mode = signal<'diagram' | 'list'>('diagram');
   /** `null` until the reader picks: then the module with the most classes. */
   readonly pickedModule = signal<string | null>(null);
@@ -83,9 +143,11 @@ export class UmlComponent {
   });
 
   readonly views = computed(() => this.data.index()?.uml ?? []);
-  readonly current = computed(() => {
-    const all = this.views();
-    return all.find((v) => v.key === this.view()) ?? null;
+  readonly current = computed(() => this.views().find((v) => v.key === this.view()) ?? null);
+  /** A view with format errors. */
+  readonly broken = computed(() => {
+    const v = this.current();
+    return v?.errors.length ? v : null;
   });
   readonly kind = computed(() => {
     const v = this.current();
@@ -97,9 +159,21 @@ export class UmlComponent {
     if (!data) return null;
     return this.kind() === 'classes' ? filterClasses(data, this.module()) : data;
   });
-  readonly rows = computed(() => {
+
+  /** §F/uml/views/000097: the list holds the same content as the drawing. */
+  readonly rows = computed<LoadState<readonly ListGroup[]>>(() => {
+    const failed = this.data.error();
+    if (failed) {
+      return { state: 'error', message: this.t(errorKey(failed)), retry: () => this.data.reload() };
+    }
+    if (!this.data.index()) return { state: 'loading' };
+    if (!this.views().length) return { state: 'empty', heading: this.t('uml.none'), icon: 'shapes' };
     const data = this.shown();
-    return data ? umlRows(this.kind(), data) : [];
+    if (!data) return { state: 'loading' };
+    const groups = umlRows(this.kind(), data).map((r) => this.group(r));
+    return groups.length
+      ? { state: 'ready', data: groups }
+      : { state: 'empty', heading: this.t('uml.none'), icon: 'shapes' };
   });
 
   readonly viewOptions = computed<FilterSelectOption[]>(() =>
@@ -153,6 +227,30 @@ export class UmlComponent {
     });
   }
 
+  /** The rows of one element: the element and its lines to other elements. */
+  private group(r: UmlRow): ListGroup {
+    const element: ListRow = {
+      id: r.element.id,
+      title: r.element.name,
+      meta: [this.rowSub(r)],
+      link: { commands: this.elementLink(r.element.id) },
+    };
+    const line = (e: UmlEdge, other: string, arrow: string, i: number): ListRow => ({
+      id: `${r.element.id}${arrow}${i}`,
+      title: `${arrow} ${this.edgeText(e, other)}`,
+      link: { commands: this.elementLink(other) },
+    });
+    return {
+      key: r.element.id,
+      label: r.element.name,
+      rows: [
+        element,
+        ...r.outgoing.map((e, i) => line(e, e.to, '→', i)),
+        ...r.incoming.map((e, i) => line(e, e.from, '←', i)),
+      ],
+    };
+  }
+
   /** The link of an element of the current view. */
   elementLink(id: string): string[] {
     return ['/', this.data.repo(), this.data.ref(), 'uml', this.view(), id];
@@ -176,13 +274,5 @@ export class UmlComponent {
   edgeText(e: UmlEdge, other: string): string {
     const label = edgeLabel(this.kind(), e);
     return label ? `${other} · ${label}` : other;
-  }
-
-  errorText(status: number): string {
-    return this.t(errorKey(status));
-  }
-
-  closeDetail(): void {
-    void this.router.navigate(['/', this.data.repo(), this.data.ref(), 'uml', this.view()]);
   }
 }

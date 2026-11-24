@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom';
-import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
+import { toHaveNoViolations } from 'jest-axe';
+import { setupZonelessTestEnv } from 'jest-preset-angular/setup-env/zoneless';
 
-setupZoneTestEnv();
+setupZonelessTestEnv();
+expect.extend(toHaveNoViolations);
 
 // jsdom does not implement matchMedia. ThemeService needs it.
 Object.defineProperty(window, 'matchMedia', {

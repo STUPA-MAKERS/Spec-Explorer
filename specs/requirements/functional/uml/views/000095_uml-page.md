@@ -4,7 +4,7 @@ title: The page UML shows the views of specs/uml
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-11
+updated: 2026-11-24
 tests:
   - "backend/tests/test_umlindex.py:test_views_in_order"
   - "backend/tests/test_umlindex.py:test_no_uml_folder"
@@ -18,7 +18,6 @@ implementation:
   - frontend/src/app/routes.ts
   - frontend/src/app/app.ts
   - frontend/src/app/uml.component.ts
-  - frontend/src/app/uml.component.html
 scope:
   - backend
   - frontend

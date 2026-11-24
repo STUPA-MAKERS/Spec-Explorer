@@ -4,9 +4,9 @@ title: The pages Specs and Verweise use list and detail
 kind: non-functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-06
+updated: 2026-11-24
 implementation:
-  - frontend/src/app/explorer.component.html
+  - frontend/src/app/explorer.component.ts
   - frontend/src/app/refs.component.ts
 scope:
   - frontend

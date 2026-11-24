@@ -4,14 +4,13 @@ title: The detail of a spec lists its UML elements
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-11
+updated: 2026-11-24
 tests:
   - "frontend/src/app/uml.spec.ts:uml.elementsForSpec"
   - "frontend/src/app/pages.spec.ts:pages.specUml"
 implementation:
   - frontend/src/app/uml.ts
   - frontend/src/app/spec-detail.component.ts
-  - frontend/src/app/spec-detail.component.html
 scope:
   - frontend
 ---

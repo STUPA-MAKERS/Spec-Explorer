@@ -1,34 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
-import {
-  ButtonComponent,
-  EmptyStateComponent,
-  FilterSelectComponent,
-  ListDetailLayoutComponent,
-  ListGroupComponent,
-  ListItemComponent,
-  PageHeaderComponent,
-  ScrollFadeDirective,
-  SearchPillComponent,
-  StatusTextComponent,
-  StickyBarComponent,
-  type FilterSelectOption,
-  type StatusKind,
-} from '@stupa-makers/ui-kit';
-import { injectListDetailPage } from '@stupa-makers/ui-kit/shell';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import type { FilterDef, ListGroup, ListQuery, LoadState, StatusKind } from '@stupa-makers/ui-kit';
+import { ListDetailScreenComponent } from '@stupa-makers/ui-kit/screens';
 import { DataService } from './data.service';
 import { I18n } from './i18n';
 import { KINDS, STATUSES, filterSpecs, groupSpecs, statusOf, type Spec } from './model';
-import { SourceComponent } from './source.component';
+import { SourceService } from './source.component';
 
 export const STATUS_KIND: Record<string, StatusKind> = {
   draft: 'warn',
@@ -43,37 +19,40 @@ export function errorKey(status: number): string {
   return status === 404 ? 'notFound' : status === 413 ? 'tooLarge' : 'loadFailed';
 }
 
-/** The page `Specs`: the list of every spec at the source and the detail of one. */
+/** The value of one filter of a list query, or the empty string. */
+export function queryValue(q: ListQuery, key: string): string {
+  const v = q.filters[key];
+  return typeof v === 'string' ? v : '';
+}
+
+/**
+ * The page `Specs`: the list of every spec at the source and the detail of one, on the
+ * list/detail screen of the kit. §F/specs/list/000010, §F/specs/list/000011,
+ * §F/specs/list/000012, §F/specs/list/000013, §NF/usability/layout/000037
+ */
 @Component({
   selector: 'app-explorer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterOutlet,
-    ButtonComponent,
-    EmptyStateComponent,
-    FilterSelectComponent,
-    ListDetailLayoutComponent,
-    ListGroupComponent,
-    ListItemComponent,
-    PageHeaderComponent,
-    ScrollFadeDirective,
-    SearchPillComponent,
-    StatusTextComponent,
-    StickyBarComponent,
-    SourceComponent,
-  ],
-  host: { '[class.pane-page]': 'split()' },
-  templateUrl: './explorer.component.html',
-  styleUrl: './explorer.component.scss',
+  imports: [ListDetailScreenComponent],
+  template: `
+    <app-list-detail-screen
+      [head]="{ title: t('specs') }"
+      [scope]="source.scope()"
+      [search]="{ placeholder: t('searchSpecs') }"
+      [filters]="filters()"
+      [filtersLabel]="t('filter')"
+      [rows]="rows()"
+      [none]="{ heading: t('pickSpec'), icon: 'document' }"
+      [config]="{ reset: true }"
+      (scopeChange)="source.change('specs', $event)"
+      (query)="onQuery($event)"
+    />
+  `,
 })
 export class ExplorerComponent {
   readonly data = inject(DataService);
-  private readonly router = inject(Router);
+  readonly source = inject(SourceService);
   readonly t = inject(I18n).t;
-  private readonly layout = viewChild(ListDetailLayoutComponent);
-  private readonly ld = injectListDetailPage(this.layout);
-  readonly split = this.ld.split;
-  readonly selectedId = this.ld.selectedId;
 
   /** Route parameters. */
   readonly repo = input('');
@@ -83,18 +62,28 @@ export class ExplorerComponent {
   readonly status = signal('');
   readonly kind = signal('');
 
-  readonly statusOptions = computed<FilterSelectOption[]>(() => [
-    { value: '', label: this.t('all') },
-    ...STATUSES.map((v) => ({ value: v, label: this.t(`status.${v}`) })),
+  readonly filters = computed<readonly FilterDef[]>(() => [
+    {
+      key: 'status',
+      label: this.t('status'),
+      kind: 'single',
+      value: null,
+      options: [
+        { value: '', label: this.t('all') },
+        ...STATUSES.map((v) => ({ value: v, label: this.t(`status.${v}`) })),
+      ],
+    },
+    {
+      key: 'kind',
+      label: this.t('kind'),
+      kind: 'single',
+      value: null,
+      options: [
+        { value: '', label: this.t('all') },
+        ...KINDS.map((v) => ({ value: v, label: this.t(`kind.${v}`) })),
+      ],
+    },
   ]);
-  readonly kindOptions = computed<FilterSelectOption[]>(() => [
-    { value: '', label: this.t('all') },
-    ...KINDS.map((v) => ({ value: v, label: this.t(`kind.${v}`) })),
-  ]);
-  readonly statusText = computed(() =>
-    this.status() ? this.t(`status.${this.status()}`) : this.t('status'),
-  );
-  readonly kindText = computed(() => (this.kind() ? this.t(`kind.${this.kind()}`) : this.t('kind')));
   readonly filtered = computed(() => !!(this.q() || this.status() || this.kind()));
   readonly groups = computed(() =>
     groupSpecs(
@@ -105,6 +94,27 @@ export class ExplorerComponent {
       }),
     ),
   );
+  readonly rows = computed<LoadState<readonly ListGroup[]>>(() => {
+    const failed = this.data.error();
+    if (failed) {
+      return { state: 'error', message: this.t(errorKey(failed)), retry: () => this.data.reload() };
+    }
+    if (!this.data.index()) return { state: 'loading' };
+    const groups = this.groups();
+    if (!groups.length) {
+      return this.filtered()
+        ? { state: 'empty', heading: this.t('noSpecMatch'), icon: 'searchOff' }
+        : { state: 'empty', heading: this.t('noSpecs'), icon: 'document' };
+    }
+    return {
+      state: 'ready',
+      data: groups.map((g) => ({
+        key: g.key,
+        label: `${this.t('kind.' + g.kind)} · ${g.topic}`,
+        rows: g.specs.map((s) => this.row(s)),
+      })),
+    };
+  });
 
   constructor() {
     effect(() => {
@@ -112,21 +122,23 @@ export class ExplorerComponent {
     });
   }
 
-  statusKind(s: Spec): StatusKind {
-    return STATUS_KIND[statusOf(s)] ?? 'muted';
+  private row(s: Spec): ListGroup['rows'][number] {
+    const status = this.data.status(s);
+    return {
+      id: s.id,
+      title: s.title,
+      meta: [`${s.num} · ${s.id.split('/').slice(0, -1).join('/')}`],
+      code: 'meta',
+      link: { commands: this.data.specLink(s.id) },
+      ...(status === 'approved'
+        ? {}
+        : { status: { label: this.t(`status.${status}`), kind: STATUS_KIND[statusOf(s)] ?? 'muted' } }),
+    };
   }
 
-  errorText(status: number): string {
-    return this.t(errorKey(status));
-  }
-
-  reset(): void {
-    this.q.set('');
-    this.status.set('');
-    this.kind.set('');
-  }
-
-  closeDetail(): void {
-    void this.router.navigate(['/', this.data.repo(), this.data.ref()]);
+  onQuery(q: ListQuery): void {
+    this.q.set(q.search);
+    this.status.set(queryValue(q, 'status'));
+    this.kind.set(queryValue(q, 'kind'));
   }
 }

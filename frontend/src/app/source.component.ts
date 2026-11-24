@@ -2,160 +2,44 @@ import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  Injectable,
   computed,
   inject,
-  input,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-  ButtonComponent,
-  DialogComponent,
-  FilterSelectComponent,
-  InputComponent,
-  ListItemComponent,
-  SearchPillComponent,
-  SegmentedComponent,
-  StatusTextComponent,
-  type FilterSelectOption,
-  type SegmentedOption,
-} from '@stupa-makers/ui-kit';
+import { SelectSheetComponent, type SelectSheetOption } from '@stupa-makers/ui-kit';
+import type { ScreenScope } from '@stupa-makers/ui-kit/screens';
 import { DataService } from './data.service';
 import { I18n } from './i18n';
-import { ORG, SHA_RE, type RepoRefs } from './model';
+import { SHA_RE, type RepoRefs } from './model';
 
-/** The value of the ref chip that opens the dialog. */
-const OTHER = '\u0000other';
+/** The value of the ref chip that opens the sheet. */
+export const OTHER = '\u0000other';
+
+/** The page that the source chips switch. */
+export type SourcePage = 'specs' | 'refs' | 'uml';
 
 /**
- * The source of a page: the chips `Repo` and `Stand` and the dialog for any branch, tag or
- * commit SHA. §F/sources/refs/000004
+ * The source of a page: the chips `Repo` and `Stand` of the list screen and the sheet for any
+ * branch, tag or commit SHA. §F/sources/refs/000004
  */
-@Component({
-  selector: 'app-source',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    FormsModule,
-    ButtonComponent,
-    DialogComponent,
-    FilterSelectComponent,
-    InputComponent,
-    ListItemComponent,
-    SearchPillComponent,
-    SegmentedComponent,
-    StatusTextComponent,
-  ],
-  template: `
-    <app-filter-select
-        [label]="t('repo')"
-        icon="package"
-        [options]="repoOptions()"
-        [value]="data.repo()"
-        [active]="true"
-        (valueChange)="setRepo($event)"
-      />
-      <app-filter-select
-        [label]="t('ref')"
-        icon="flow"
-        [options]="refOptions()"
-        [value]="data.ref()"
-        [text]="refText()"
-        [active]="true"
-        (valueChange)="setRef($event)"
-      />
-    <app-dialog
-      [open]="dialog()"
-      [title]="t('chooseRef')"
-      [subtitle]="org + '/' + data.repo()"
-      (closed)="dialog.set(false)"
-    >
-      <div class="src">
-        <app-segmented
-          [options]="tabs()"
-          [value]="tab()"
-          (valueChange)="tab.set($event ?? 'branch')"
-          [ariaLabel]="t('refKind')"
-          width="fill"
-        />
-        @if (tab() === 'commit') {
-          <app-input
-            [label]="t('commitSha')"
-            [error]="shaError()"
-            [(ngModel)]="sha"
-            (keydown.enter)="openSha()"
-          />
-        } @else {
-          <app-search-pill
-            size="md"
-            [placeholder]="tab() === 'branch' ? t('searchBranch') : t('searchTag')"
-            [value]="q()"
-            (valueChange)="q.set($event)"
-          />
-          <div class="rowgroup src__rows">
-            @for (r of rows(); track r) {
-              <app-list-item [title]="r" [selected]="r === data.ref()" (activate)="go(data.repo(), r)">
-                @if (r === data.ref()) {
-                  <app-status-text trail kind="accent">{{ t('current') }}</app-status-text>
-                }
-              </app-list-item>
-            }
-          </div>
-        }
-      </div>
-      <div dialog-footer>
-        <app-button variant="text" (click)="dialog.set(false)">{{ t('cancel') }}</app-button>
-        @if (tab() === 'commit') {
-          <app-button (click)="openSha()">{{ t('open') }}</app-button>
-        }
-      </div>
-    </app-dialog>
-  `,
-  styles: `
-    :host {
-      display: contents;
-    }
-    app-filter-select {
-      max-width: 100%;
-    }
-    .src {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-3);
-      min-width: 0;
-    }
-    .src__rows {
-      max-height: 22rem;
-      overflow: auto;
-    }
-  `,
-})
-export class SourceComponent {
-  readonly data = inject(DataService);
+@Injectable({ providedIn: 'root' })
+export class SourceService {
+  private readonly data = inject(DataService);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
-  readonly t = inject(I18n).t;
-  readonly org = ORG;
-  /** The page that the chips switch: the specs, the references or the UML views. */
-  readonly page = input<'specs' | 'refs' | 'uml'>('specs');
+  private readonly t = inject(I18n).t;
 
-  readonly dialog = signal(false);
-  readonly tab = signal('branch');
-  readonly q = signal('');
-  sha = '';
-  readonly shaError = signal('');
+  /** The sheet "Stand wählen" is open, for this page. */
+  readonly sheet = signal<SourcePage | null>(null);
 
-  readonly tabs = computed<SegmentedOption[]>(() => [
-    { value: 'branch', label: this.t('branch') },
-    { value: 'tag', label: this.t('tag') },
-    { value: 'commit', label: this.t('commit') },
-  ]);
-  readonly repoOptions = computed<FilterSelectOption[]>(() => {
+  private readonly repoOptions = computed(() => {
     const repos = this.data.repos();
     const list = repos.includes(this.data.repo()) ? repos : [this.data.repo(), ...repos];
     return list.map((r) => ({ value: r, label: r }));
   });
-  readonly refOptions = computed<FilterSelectOption[]>(() => {
+  private readonly refOptions = computed(() => {
     const refs = this.data.repoRefs();
     const list = [refs?.defaultBranch ?? '', this.data.ref(), ...(refs?.tags.slice(0, 4) ?? [])];
     const unique = [...new Set(list.filter(Boolean))];
@@ -169,50 +53,105 @@ export class SourceComponent {
     const sha = this.data.sha().slice(0, 7);
     return sha ? `${this.data.ref()} · ${sha}` : this.data.ref();
   });
-  readonly rows = computed(() => {
-    const refs = this.data.repoRefs();
-    if (!refs) return [];
-    const q = this.q().trim().toLowerCase();
-    const list =
-      this.tab() === 'tag'
-        ? refs.tags
-        : [refs.defaultBranch, ...refs.branches.filter((b) => b !== refs.defaultBranch)];
-    return list.filter((x) => x.toLowerCase().includes(q)).slice(0, 100);
-  });
+  /** The scope of the list screen: the chips `Repo` and `Stand`. */
+  readonly scope = computed<ScreenScope>(() => ({
+    label: this.t('source'),
+    chips: [
+      {
+        key: 'repo',
+        label: this.t('repo'),
+        icon: 'package',
+        options: this.repoOptions(),
+        value: this.data.repo(),
+      },
+      {
+        key: 'ref',
+        label: this.t('ref'),
+        icon: 'flow',
+        options: this.refOptions(),
+        value: this.data.ref(),
+        text: this.refText(),
+      },
+    ],
+  }));
 
-  setRepo(repo: string): void {
+  /** A chip of the scope got a new value. */
+  change(page: SourcePage, e: { readonly key: string; readonly value: string }): void {
+    if (e.key === 'repo') this.setRepo(page, e.value);
+    else if (e.value === OTHER) this.sheet.set(page);
+    else if (e.value !== this.data.ref()) this.go(page, this.data.repo(), e.value);
+  }
+
+  private setRepo(page: SourcePage, repo: string): void {
     if (repo === this.data.repo()) return;
     this.http.get<RepoRefs>(`/api/repos/${encodeURIComponent(repo)}/refs`).subscribe({
-      next: (r) => this.go(r.repo, r.defaultBranch),
+      next: (r) => this.go(page, r.repo, r.defaultBranch),
       error: () => undefined,
     });
   }
 
-  setRef(ref: string): void {
-    if (ref === OTHER) {
-      this.q.set('');
-      this.dialog.set(true);
-    } else if (ref !== this.data.ref()) {
-      this.go(this.data.repo(), ref);
-    }
-  }
-
-  /** §F/sources/refs/000005: a commit SHA has 7 to 40 hexadecimal characters. */
-  openSha(): void {
-    const sha = this.sha.trim();
-    if (!SHA_RE.test(sha)) {
-      this.shaError.set(this.t('shaInvalid'));
-      return;
-    }
-    this.shaError.set('');
-    this.go(this.data.repo(), sha.toLowerCase());
-  }
-
-  go(repo: string, ref: string): void {
-    this.dialog.set(false);
-    const page = this.page();
+  go(page: SourcePage, repo: string, ref: string): void {
+    this.sheet.set(null);
     const base =
-      page === 'refs' ? ['/verweise', repo, ref] : page === 'uml' ? ['/', repo, ref, 'uml'] : ['/', repo, ref];
+      page === 'refs'
+        ? ['/verweise', repo, ref]
+        : page === 'uml'
+          ? ['/', repo, ref, 'uml']
+          : ['/', repo, ref];
     void this.router.navigate(base);
+  }
+}
+
+/**
+ * The sheet "Stand wählen": the branches and tags of the repository, and a commit SHA that the
+ * search names. §F/sources/refs/000004, §F/sources/refs/000005
+ */
+@Component({
+  selector: 'app-source-sheet',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SelectSheetComponent],
+  template: `
+    <app-select-sheet
+      [open]="source.sheet() !== null"
+      (openChange)="$event || source.sheet.set(null)"
+      [heading]="t('chooseRef')"
+      [options]="options()"
+      [value]="data.ref()"
+      [search]="{ placeholder: t('searchRef') }"
+      [(query)]="query"
+      [listLabel]="t('refList')"
+      [emptyHeading]="t('noRefFound')"
+      [submitLabel]="t('open')"
+      (picked)="pick($event)"
+    />
+  `,
+})
+export class SourceSheetComponent {
+  readonly data = inject(DataService);
+  readonly source = inject(SourceService);
+  readonly t = inject(I18n).t;
+  readonly query = signal('');
+
+  /**
+   * The branches (the default branch first) and the tags that match the search, at most 100,
+   * and the commit when the search is a SHA of 7 to 40 hex characters.
+   */
+  readonly options = computed<readonly SelectSheetOption[] | null>(() => {
+    const refs = this.data.repoRefs();
+    if (!refs) return null;
+    const q = this.query().trim().toLowerCase();
+    const branches = [refs.defaultBranch, ...refs.branches.filter((b) => b !== refs.defaultBranch)];
+    const rows: SelectSheetOption[] = [
+      ...branches.map((b) => ({ value: b, label: b, sub: this.t('branch') })),
+      ...refs.tags.map((x) => ({ value: x, label: x, sub: this.t('tag') })),
+    ].filter((o) => o.label.toLowerCase().includes(q));
+    const sha = SHA_RE.test(q) ? [{ value: q, label: q, sub: this.t('commit') }] : [];
+    return [...sha, ...rows].slice(0, 100);
+  });
+
+  pick(value: string | readonly string[]): void {
+    const page = this.source.sheet() ?? 'specs';
+    this.query.set('');
+    this.source.go(page, this.data.repo(), String(value));
   }
 }

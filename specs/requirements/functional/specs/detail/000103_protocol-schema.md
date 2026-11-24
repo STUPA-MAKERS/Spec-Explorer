@@ -4,14 +4,14 @@ title: The detail shows the schema as a field table and as raw JSON
 kind: functional
 status: approved
 owner: frederikbeimgraben
-updated: 2026-11-15
+updated: 2026-11-24
 tests:
   - "backend/tests/test_specindex.py:test_protocol_schema"
   - "frontend/src/app/model.spec.ts:schemaFields.fieldTable"
 implementation:
   - backend/app/specindex.py
   - frontend/src/app/model.ts
-  - frontend/src/app/spec-detail.component.html
+  - frontend/src/app/spec-detail.component.ts
 scope:
   - backend
   - frontend
